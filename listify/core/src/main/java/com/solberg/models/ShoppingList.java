@@ -7,8 +7,8 @@ public class ShoppingList {
   private List<ListItem> listItems;
   private User user;
 
-  public ShoppingList(List<ListItem> ListItems, User user) {
-    this.listItems = ListItems;
+  public ShoppingList(List<ListItem> listItems, User user) {
+    this.listItems = listItems;
     this.user = user;
   }
 
