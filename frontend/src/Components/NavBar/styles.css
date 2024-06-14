@@ -9,6 +9,26 @@
 }
 
 .navbar-item-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 2.5rem;
-  text-align: center;
+}
+
+.navbar-left-container {
+  width: 65%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+
+}
+
+.navbar-right-container {
+  width: 35%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+
 }
