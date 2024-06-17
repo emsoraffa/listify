@@ -6,4 +6,17 @@ public class ListItem {
   public ListItem(String name) {
     this.name = name;
   }
+
+  public ListItem() {
+
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
 }

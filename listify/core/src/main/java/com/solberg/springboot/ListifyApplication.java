@@ -1,4 +1,4 @@
-package com.solberg.api;
+package com.solberg.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
