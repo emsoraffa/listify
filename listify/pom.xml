@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>core</module>
         <module>bom</module>
+        <module>core</module>
     </modules>
 
     <dependencyManagement>
