@@ -1,5 +1,6 @@
 import { Button } from "@mui/material";
 
+//TODO: Remove inline css
 export function LoginPage() {
   const googleLogin = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
