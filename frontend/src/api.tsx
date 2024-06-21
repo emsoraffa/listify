@@ -1,6 +1,6 @@
 const SERVER_IP = null;
 const SERVER_PORT = null;
-const API_URL = `http://${SERVER_IP || "localhost"}:${SERVER_PORT || "8080"}`;
+const API_URL = `http://${SERVER_IP || "localhost"}:${SERVER_PORT || "8080"}/api`;
 
 interface ListItem {
   name: string;
