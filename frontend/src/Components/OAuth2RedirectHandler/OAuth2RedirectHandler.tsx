@@ -1,23 +1,25 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export function OAuth2RedirectHandler() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const token = params.get('token');
+
     console.log('OAuth2 Redirect Handler called with token:', token); // Debug log
 
     if (token) {
       localStorage.setItem('accessToken', token);
-      navigate('/home');
+      navigate('/home', { replace: true });
     } else {
       console.error('Token is null');
-      navigate('/login');
+      navigate('/login', { replace: true });
     }
-  }, [navigate]);
+  }, [location, navigate]);
 
   return <div>Loading...</div>;
-};
+}
 

@@ -4,11 +4,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @Configuration
@@ -23,19 +28,26 @@ public class SecurityConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
+  private final OAuth2AuthorizedClientService authorizedClientService;
+
+  public SecurityConfig(OAuth2AuthorizedClientService authorizedClientService) {
+    this.authorizedClientService = authorizedClientService;
+  }
+
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http,
-      OAuth2AuthorizedClientService authorizedClientService) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers("/", "/login**", "/error**", "/oauth2/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth2Login -> oauth2Login
             .loginPage("/login")
+            .defaultSuccessUrl("/oauth2/success", true)
+            .failureHandler(oAuth2LoginFailureHandler())
             .successHandler(oAuth2LoginSuccessHandler()))
         .cors()
         .and()
-        .csrf();
+        .csrf().disable();
     return http.build();
   }
 
@@ -45,30 +57,46 @@ public class SecurityConfig {
       @Override
       public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
           Authentication authentication) throws IOException, ServletException {
-        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        Object principal = oauthToken.getPrincipal();
+        try {
+          OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+          OAuth2User oauthUser = oauthToken.getPrincipal();
 
-        // Log the class type of principal for debugging
-        logger.debug("Principal class: " + principal.getClass().getName());
+          String redirectUrl = "http://localhost:3000/oauth2/redirect";
 
-        if (principal instanceof OidcUser) {
-          OidcUser oidcUser = (OidcUser) principal;
-          String idToken = oidcUser.getIdToken().getTokenValue();
+          if (oauthUser instanceof OidcUser) {
+            OidcUser oidcUser = (OidcUser) oauthUser;
+            String idToken = oidcUser.getIdToken().getTokenValue();
+            logger.debug("OIDC ID Token: " + idToken);
+            redirectUrl += "?token=" + idToken;
+          } else {
+            OAuth2AuthorizedClient authorizedClient = authorizedClientService
+                .loadAuthorizedClient(oauthToken.getAuthorizedClientRegistrationId(), oauthToken.getName());
+            if (authorizedClient != null) {
+              String accessToken = authorizedClient.getAccessToken().getTokenValue();
+              logger.debug("OAuth2 Access Token: " + accessToken);
+              redirectUrl += "?token=" + accessToken;
+            }
+          }
 
-          // Debugging to see what attributes are available
-          oidcUser.getAttributes().forEach((k, v) -> logger.debug(k + ": " + v));
-
-          // Log the token for debugging purposes
-          logger.debug("ID Token: " + idToken);
-
-          // Construct the redirect URL
-          String redirectUrl = "http://localhost:3000/oauth2/redirect?token=" + idToken;
+          oauthUser.getAttributes().forEach((k, v) -> logger.debug(k + ": " + v));
           getRedirectStrategy().sendRedirect(request, response, redirectUrl);
-        } else {
-          // Log error or handle other types of principal if needed
-          logger.error("Principal is not of type OidcUser. Principal: " + principal);
-          throw new IllegalStateException("Principal is not of type OidcUser");
+        } catch (Exception e) {
+          logger.error("Error during OAuth2 login success handling", e);
+          throw e;
         }
+      }
+    };
+  }
+
+  @Bean
+  public AuthenticationFailureHandler oAuth2LoginFailureHandler() {
+    return new SimpleUrlAuthenticationFailureHandler() {
+      @Override
+      public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+          org.springframework.security.core.AuthenticationException exception)
+          throws IOException, ServletException {
+        logger.error("OAuth2 login failure", exception);
+        super.onAuthenticationFailure(request, response, exception);
       }
     };
   }
