@@ -1,5 +1,6 @@
 package com.solberg.springboot.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+
+import com.solberg.springboot.CustomOAuth2UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +34,9 @@ public class SecurityConfig {
 
   private final OAuth2AuthorizedClientService authorizedClientService;
 
+  @Autowired
+  private CustomOAuth2UserService customOAuth2UserService;
+
   public SecurityConfig(OAuth2AuthorizedClientService authorizedClientService) {
     this.authorizedClientService = authorizedClientService;
   }
@@ -44,7 +51,10 @@ public class SecurityConfig {
             .loginPage("/login")
             .defaultSuccessUrl("/oauth2/success", true)
             .failureHandler(oAuth2LoginFailureHandler())
-            .successHandler(oAuth2LoginSuccessHandler()))
+            .successHandler(oAuth2LoginSuccessHandler())
+            .userInfoEndpoint()
+            .userService(customOAuth2UserService)
+)
         .cors()
         .and()
         .csrf().disable();
