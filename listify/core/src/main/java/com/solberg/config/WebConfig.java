@@ -1,4 +1,4 @@
-package com.solberg.springboot.config;
+package com.solberg.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.solberg.springboot.config;
+package com.solberg.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -53,8 +53,7 @@ public class SecurityConfig {
             .failureHandler(oAuth2LoginFailureHandler())
             .successHandler(oAuth2LoginSuccessHandler())
             .userInfoEndpoint()
-            .userService(customOAuth2UserService)
-)
+            .userService(customOAuth2UserService))
         .cors()
         .and()
         .csrf().disable();
