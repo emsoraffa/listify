@@ -2,14 +2,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
-.landing-header {
+.big-landing-header {
   max-width: 40%;
   text-align: center;
   font-weight: bold;
 }
 
+.small-landing-header {
+  max-width: 75%;
+  text-align: center;
+  font-weight: bold;
+}
+
 .btn-row {
-  justify-content: space-evenly;
+  display: flex;
+}
+
+.btn-col {
+  display: grid;
 }

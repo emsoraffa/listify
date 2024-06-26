@@ -9,9 +9,7 @@ export function CallToActionButton() {
   return (
     <Button onClick={handleClick} variant="contained" color="secondary" sx={{
       ':hover': {
-        bgcolor: '#2a334d', // Assuming 'primary' is the button's color
-        // If you need a specific color calculation:
-        // bgcolor: (theme) => theme.palette.primary.light,
+        bgcolor: '#2a334d',
       }
     }}>Get started</Button>
   )
