@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.solberg.springboot.CustomOAuth2UserService;
 
@@ -42,13 +45,19 @@ public class SecurityConfig {
   }
 
   @Bean
+  WebSecurityCustomizer webSecurityCustomizer() {
+    return web -> web.ignoring()
+        .requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
+  }
+
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers("/", "/login**", "/error**", "/oauth2/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth2Login -> oauth2Login
-            .loginPage("/login")
+            .loginPage("http://localhost:3000/login")
             .defaultSuccessUrl("/oauth2/success", true)
             .failureHandler(oAuth2LoginFailureHandler())
             .successHandler(oAuth2LoginSuccessHandler())
@@ -56,7 +65,8 @@ public class SecurityConfig {
             .userService(customOAuth2UserService))
         .cors()
         .and()
-        .csrf().disable();
+        .csrf().disable() // Disable CSRF protection for H2 console
+        .headers().frameOptions().sameOrigin(); // Allow H2 console to be displayed in a frame
     return http.build();
   }
 
