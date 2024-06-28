@@ -16,19 +16,6 @@ import com.solberg.persistence.DataHandler;
 public class WebConfig {
 
   @Bean
-  public DataSource dataSource() {
-    return new EmbeddedDatabaseBuilder()
-        .setType(EmbeddedDatabaseType.H2)
-        .addScript("classpath:jdbc/schema.sql")
-        .build();
-  }
-
-  @Bean
-  public DataHandler dataHandler(DataSource dataSource) {
-    return new DataHandler(dataSource);
-  }
-
-  @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       @Override

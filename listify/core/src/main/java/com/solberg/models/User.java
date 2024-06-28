@@ -3,6 +3,7 @@ package com.solberg.models;
 import java.util.List;
 
 public class User {
+  // TODO: add more attributes like locale, gender given name etc
   private String name;
   private String email;
   private List<ShoppingList> shoppingLists;
