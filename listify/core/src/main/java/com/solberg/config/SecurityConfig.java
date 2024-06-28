@@ -57,7 +57,7 @@ public class SecurityConfig {
             .requestMatchers("/", "/login**", "/error**", "/oauth2/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth2Login -> oauth2Login
-            .loginPage("http://localhost:3000/login")
+            .loginPage("/login")
             .defaultSuccessUrl("/oauth2/success", true)
             .failureHandler(oAuth2LoginFailureHandler())
             .successHandler(oAuth2LoginSuccessHandler())
