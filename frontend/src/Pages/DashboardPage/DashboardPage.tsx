@@ -24,8 +24,7 @@ export function DashboardPage() {
 
   return (
     <div className="content-container">
-      <div>{greeting ? greeting.name : "Loading..."}</div>
-
+      <h2>Big text things</h2>
     </div>
   );
 }

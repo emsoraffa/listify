@@ -1,0 +1,25 @@
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  width: 5rem;
+  height: 100%;
+  background-color: #f4f4f4;
+  align-items: center;
+
+}
+
+.large-sidebar-container {
+  display: flex;
+  flex-direction: column;
+  width: 20rem;
+  height: 100%;
+  background-color: #f4f4f4;
+  align-items: center;
+}
+
+.sidebar-item {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

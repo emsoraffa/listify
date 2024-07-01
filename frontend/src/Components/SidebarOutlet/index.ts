@@ -1,0 +1,1 @@
+export { SidebarOutlet } from "./SidebarOutlet";
