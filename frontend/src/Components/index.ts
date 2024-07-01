@@ -4,4 +4,3 @@ export { OAuth2RedirectHandler } from "./OAuth2RedirectHandler";
 export { SidebarOutlet } from "./SidebarOutlet";
 export { NavbarOutlet } from "./NavbarOutlet";
 export { ProtectedRoute } from "./ProtectedRoute";
-export { ListEditor } from "./ListEditor";

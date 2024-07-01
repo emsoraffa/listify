@@ -1,0 +1,31 @@
+.checklist-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.checklist-item+.checklist-item {
+  margin-top: 0;
+}
+
+.checkbox-container {
+  margin-right: 0.75em;
+}
+
+.checkbox-content {
+  flex: 1;
+}
+
+.checkbox-content-checked {
+  opacity: 0.666;
+  text-decoration: line-through;
+}
+
+.checkbox-content-unchecked {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.checkbox-content:focus {
+  outline: none;
+}
