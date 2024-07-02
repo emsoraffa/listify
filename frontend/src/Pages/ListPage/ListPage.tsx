@@ -1,4 +1,4 @@
-import ListEditor from "../../Components/ListEditor/ListEditor";
+import { ListEditor } from "../../Components/ListEditor";
 import "./styles.css";
 
 

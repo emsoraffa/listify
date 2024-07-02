@@ -1,4 +1,3 @@
-
 import React, { useMemo, useCallback } from 'react';
 import {
   Slate,
@@ -20,23 +19,7 @@ import {
 } from 'slate';
 import { withHistory, HistoryEditor } from 'slate-history';
 import './styles.css'; // Import the CSS file
-
-//TODO: Fix this shit.
-
-// Define custom types
-type CustomElement =
-  | { type: 'paragraph'; children: CustomText[] }
-  | { type: 'check-list-item'; checked: boolean; children: CustomText[] };
-type CustomText = { text: string; bold?: true };
-
-// Extend Slate types
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: BaseEditor & ReactEditor & HistoryEditor;
-    Element: CustomElement;
-    Text: CustomText;
-  }
-}
+import { TextElement, TextElementProps } from '../TextElement';
 
 const initialValue: Descendant[] = [
   {
@@ -59,22 +42,10 @@ const initialValue: Descendant[] = [
     checked: false,
     children: [{ text: 'Butter' }],
   },
-  {
-    type: 'check-list-item',
-    checked: false,
-    children: [{ text: 'Cheese' }],
-  },
-  {
-    type: 'check-list-item',
-    checked: true,
-    children: [{ text: 'Apples' }],
-  },
-  {
-    type: 'check-list-item',
-    checked: false,
-    children: [{ text: 'Oranges' }],
-  }
-];// Extend the editor with checklist behavior
+];
+
+//Overrides the deleteBackward method to transform a checklist item into a paragraph 
+//if the cursor is at the start of a checklist item and the delete or backspace key is pressed.
 const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
   const { deleteBackward } = editor;
 
@@ -114,75 +85,9 @@ const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
   return editor;
 };
 
-// Type guard for check-list-item
-function isCheckListItemElement(element: CustomElement): element is { type: 'check-list-item'; checked: boolean; children: CustomText[] } {
-  return element.type === 'check-list-item';
-}
 
-// Define the element rendering function
-interface ElementProps {
-  attributes: any;
-  children: any;
-  element: CustomElement;
-}
-
-const Element = (props: ElementProps) => {
-  const { attributes, children, element } = props;
-
-  if (isCheckListItemElement(element)) {
-    // Directly pass down the element with the correct type
-    return <CheckListItemElement attributes={attributes} children={children} element={element} />;
-  } else {
-    return <p {...attributes}>{children}</p>;
-  }
-};
-
-// Define the CheckListItemElement component
-interface CheckListItemElementProps {
-  attributes: any;
-  children: any;
-  element: { type: 'check-list-item'; checked: boolean; children: CustomText[] };
-}
-
-export function CheckListItemElement({
-  attributes,
-  children,
-  element,
-}: CheckListItemElementProps) {
-  const editor = useSlateStatic();
-  const readOnly = useReadOnly();
-  const { checked } = element;
-
-  return (
-    <div {...attributes} className="checklist-item">
-      <span contentEditable={false} className="checkbox-container">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(event) => {
-            const path = ReactEditor.findPath(editor, element);
-            const newProperties: Partial<SlateElement> = {
-              checked: event.target.checked,
-            };
-            Transforms.setNodes(editor, newProperties, { at: path });
-          }}
-        />
-      </span>
-      <span
-        contentEditable={!readOnly}
-        suppressContentEditableWarning
-        className={`checkbox-content ${checked ? 'checkbox-content-checked' : 'checkbox-content-unchecked'
-          }`}
-      >
-        {children}
-      </span>
-    </div>
-  );
-}
-
-// Define the main CheckListsExample component
-const CheckListsExample = () => {
-  const renderElement = useCallback((props: ElementProps) => <Element {...props} />, []);
+export function ListEditor() {
+  const renderElement = useCallback((props: TextElementProps) => <TextElement {...props} />, []);
   const editor = useMemo(
     () => withChecklists(withHistory(withReact(createEditor() as BaseEditor & ReactEditor & HistoryEditor))),
     []
@@ -199,5 +104,4 @@ const CheckListsExample = () => {
     </Slate>);
 };
 
-export default CheckListsExample;
 
