@@ -8,7 +8,6 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 export function Navbar() {
   const isMobile = useMediaQuery({ query: '(max-width:1224px)' })
-  const isDesktop = useMediaQuery({ query: '(min-width:1224px' })
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -18,7 +17,7 @@ export function Navbar() {
     setAnchorEl(null);
   };
   return (<div className='navbar-container'>
-    {isDesktop &&
+    {!isMobile &&
       <div className="navbar-left-container">
         <div className="navbar-item-container">
           <a>Listify</a>
