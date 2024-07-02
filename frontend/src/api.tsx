@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
+
 const SERVER_IP = null;
 const SERVER_PORT = null;
 const API_URL = `http://${SERVER_IP || "localhost"}:${SERVER_PORT || "8080"}/api`;
@@ -16,3 +19,25 @@ export const getListItems = async (): Promise<any> => {
   return list;
 };
 
+export const postList = async (items: string[], token: string) => {
+  console.log("Token:", token);
+  console.log("Items to be sent:", items);
+  console.log("Serialized Items:", JSON.stringify(items));
+
+  const response = await fetch(`${API_URL}/list`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(items)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Network response was not ok: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  console.log("Response data:", data);
+  return data;
+}

@@ -3,32 +3,48 @@ package com.solberg.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import com.solberg.springboot.CustomOAuth2UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 @Configuration
 public class SecurityConfig {
@@ -44,6 +60,11 @@ public class SecurityConfig {
     this.authorizedClientService = authorizedClientService;
   }
 
+  @PostConstruct
+  public void init() {
+    logger.debug("SecurityConfig initialized");
+  }
+
   @Bean
   WebSecurityCustomizer webSecurityCustomizer() {
     return web -> web.ignoring()
@@ -51,22 +72,48 @@ public class SecurityConfig {
   }
 
   @Bean
+  public JwtDecoder jwtDecoder() {
+    NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation("https://accounts.google.com");
+
+    jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
+        new JwtTimestampValidator(),
+        new JwtIssuerValidator("https://accounts.google.com"),
+        token -> {
+          // Add custom validation or logging here if needed
+          logger.info("JWT Validation - Claims: {}", token.getClaims());
+          return OAuth2TokenValidatorResult.success();
+        }));
+
+    return jwtDecoder;
+  }
+
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
+        .cors(cors -> cors
+            .configurationSource(request -> {
+              CorsConfiguration configuration = new CorsConfiguration();
+              configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Adjust this as necessary
+              configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+              configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+              return configuration;
+            }))
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers("/", "/login**", "/error**", "/oauth2/**").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .requestMatchers("/api/**").authenticated()
             .anyRequest().authenticated())
         .oauth2Login(oauth2Login -> oauth2Login
-            .loginPage("/login")
             .defaultSuccessUrl("/oauth2/success", true)
             .failureHandler(oAuth2LoginFailureHandler())
             .successHandler(oAuth2LoginSuccessHandler())
             .userInfoEndpoint()
             .userService(customOAuth2UserService))
-        .cors()
+        .csrf().disable()
+        .headers().frameOptions().sameOrigin()
         .and()
-        .csrf().disable() // Disable CSRF protection for H2 console
-        .headers().frameOptions().sameOrigin(); // Allow H2 console to be displayed in a frame
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     return http.build();
   }
 
@@ -88,12 +135,15 @@ public class SecurityConfig {
             logger.debug("OIDC ID Token: " + idToken);
             redirectUrl += "?token=" + idToken;
           } else {
+            // For non-OIDC users, handle the access token
             OAuth2AuthorizedClient authorizedClient = authorizedClientService
                 .loadAuthorizedClient(oauthToken.getAuthorizedClientRegistrationId(), oauthToken.getName());
             if (authorizedClient != null) {
               String accessToken = authorizedClient.getAccessToken().getTokenValue();
               logger.debug("OAuth2 Access Token: " + accessToken);
               redirectUrl += "?token=" + accessToken;
+            } else {
+              throw new ServletException("Unable to extract access token for non-OIDC user.");
             }
           }
 
@@ -112,11 +162,20 @@ public class SecurityConfig {
     return new SimpleUrlAuthenticationFailureHandler() {
       @Override
       public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-          org.springframework.security.core.AuthenticationException exception)
-          throws IOException, ServletException {
-        logger.error("OAuth2 login failure", exception);
-        super.onAuthenticationFailure(request, response, exception);
+          AuthenticationException exception) throws IOException, ServletException {
+        if (exception instanceof OAuth2AuthenticationException) {
+          OAuth2AuthenticationException oauthException = (OAuth2AuthenticationException) exception;
+          OAuth2Error error = oauthException.getError();
+          // Simplify the log message to directly include the exception
+          logger.error("OAuth2 Authentication Error: Code=" + error.getErrorCode() +
+              ", Description=" + error.getDescription(), oauthException);
+        } else {
+          // For non-OAuth2 exceptions, just log the exception stack trace
+          logger.error("Authentication failure: ", exception);
+        }
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed: " + exception.getMessage());
       }
     };
   }
+
 }

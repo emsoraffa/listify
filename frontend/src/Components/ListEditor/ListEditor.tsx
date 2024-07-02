@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState, useContext } from 'react';
 import {
   Slate,
   Editable,
@@ -17,10 +17,16 @@ import {
   BaseEditor,
   Element as SlateElement,
 } from 'slate';
+import { debounce } from 'lodash';
 import { withHistory, HistoryEditor } from 'slate-history';
 import './styles.css'; // Import the CSS file
 import { TextElement, TextElementProps } from '../TextElement';
+import { postList } from '../../api';
+import { Button } from '@mui/material';
+import { isCheckListItemElement } from '../../types/TypeGuards';
+import { AuthContext } from '../../context/AuthContext';
 
+//TODO: should be fetched by useEffect.
 const initialValue: Descendant[] = [
   {
     type: 'check-list-item',
@@ -85,23 +91,54 @@ const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
   return editor;
 };
 
-
 export function ListEditor() {
+  const authState = useContext(AuthContext);
+  const [value, setValue] = useState<Descendant[]>(initialValue);
   const renderElement = useCallback((props: TextElementProps) => <TextElement {...props} />, []);
   const editor = useMemo(
     () => withChecklists(withHistory(withReact(createEditor() as BaseEditor & ReactEditor & HistoryEditor))),
     []
   );
 
+  const debouncedSave = useCallback(debounce(() => {
+    handleSave();
+  }, 2000), []); // 2000 ms delay
+
+  const handleSave = () => {
+    const itemsToSave = value
+      .filter(SlateElement.isElement)
+      .filter(isCheckListItemElement)
+      .map(item => item.children[0].text);
+
+    console.log(itemsToSave);  // This log helps verify the extracted texts
+
+    if (authState?.token) {
+
+      postList(itemsToSave, authState.token)
+        .then(response => {
+          console.log('Data posted successfully:', response);
+        })
+        .catch(error => {
+          console.error('Error posting data:', error);
+        });
+    }
+  }
+
+  const onChange = (newValue: React.SetStateAction<Descendant[]>) => {
+    setValue(newValue);
+    debouncedSave();
+  };
+
   return (
-    <Slate editor={editor} initialValue={initialValue}>
+    <Slate editor={editor} initialValue={value} onChange={onChange}>
       <Editable
         renderElement={renderElement}
         placeholder="Get to work…"
         spellCheck
         autoFocus
       />
-    </Slate>);
+      <Button onClick={handleSave}>Save</Button>
+    </Slate>
+  );
 };
-
-
+;

@@ -1,4 +1,5 @@
 import { CustomElement, CustomText } from "../../types/slate";
+import { isCheckListItemElement } from "../../types/TypeGuards";
 import { CheckListItemElement } from "../CheckListItemElement";
 
 export type TextElementProps = {
@@ -7,12 +8,6 @@ export type TextElementProps = {
   element: CustomElement;
 };
 
-
-// Type guard for check-list-item
-//TODO: make generic typeguard
-function isCheckListItemElement(element: CustomElement): element is { type: 'check-list-item'; checked: boolean; children: CustomText[] } {
-  return element.type === 'check-list-item';
-}
 export function TextElement(props: TextElementProps) {
   const { attributes, children, element } = props;
 
