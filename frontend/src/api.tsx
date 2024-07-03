@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
+import { ListDto } from "./dto";
 
 const SERVER_IP = null;
 const SERVER_PORT = null;
@@ -40,4 +41,21 @@ export const postList = async (items: string[], token: string) => {
   const data = await response.json();
   console.log("Response data:", data);
   return data;
+}
+
+export const fetchUserLists = async (token: string): Promise<ListDto[]> => {
+  const response = await fetch(`${API_URL}/dashboard/lists`, {
+    method: "GET",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error(`Network response was not ok: ${response.statusText}`)
+  }
+
+  const lists: ListDto[] = await response.json();
+  return lists;
 }

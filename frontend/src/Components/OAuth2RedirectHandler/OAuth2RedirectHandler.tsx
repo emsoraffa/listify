@@ -13,7 +13,7 @@ export function OAuth2RedirectHandler() {
 
     if (token) {
       localStorage.setItem('accessToken', token);
-      navigate('/li', { replace: true });
+      navigate('/dashboard', { replace: true });
     } else {
       console.error('Token is null');
       navigate('/login', { replace: true });

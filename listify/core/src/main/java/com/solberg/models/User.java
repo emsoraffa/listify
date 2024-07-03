@@ -6,17 +6,17 @@ public class User {
   // TODO: add more attributes like locale, gender given name etc
   private String name;
   private String email;
-  private List<ShoppingList> shoppingLists;
+  private List<ListifyList> ListifyLists;
 
   public User(String name, String email) {
     this.name = name;
     this.email = email;
   }
 
-  public User(String name, String email, List<ShoppingList> shoppingLists) {
+  public User(String name, String email, List<ListifyList> ListifyLists) {
     this.name = name;
     this.email = email;
-    this.shoppingLists = shoppingLists;
+    this.ListifyLists = ListifyLists;
   }
 
   public String getName() {
@@ -35,7 +35,7 @@ public class User {
     this.email = email;
   }
 
-  public void addShoppingList(ShoppingList shoppingList) {
-    this.shoppingLists.add(shoppingList);
+  public void addListifyList(ListifyList ListifyList) {
+    this.ListifyLists.add(ListifyList);
   }
 }

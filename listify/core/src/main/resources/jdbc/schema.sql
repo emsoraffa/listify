@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE
 );
 
--- Create table for ShoppingList
+-- Create table for ListifyList
 CREATE TABLE IF NOT EXISTS shopping_lists (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
