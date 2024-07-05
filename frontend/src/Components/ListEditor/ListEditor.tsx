@@ -25,6 +25,7 @@ import { postList } from '../../api';
 import { Button } from '@mui/material';
 import { isCheckListItemElement } from '../../types/TypeGuards';
 import { AuthContext } from '../../context/AuthContext';
+import { CheckListItemElement } from '../CheckListItemElement';
 
 //TODO: should be fetched by useEffect.
 const initialValue: Descendant[] = [
@@ -108,7 +109,10 @@ export function ListEditor() {
     const itemsToSave = value
       .filter(SlateElement.isElement)
       .filter(isCheckListItemElement)
-      .map(item => item.children[0].text);
+      .map(item => ({
+        text: item.children[0].text,
+        checked: item.checked,
+      }));
 
     console.log(itemsToSave);  // This log helps verify the extracted texts
 

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.solberg.models.ListifyList;
 import com.solberg.models.User;
 
 public class DataHandler {
@@ -37,5 +38,16 @@ public class DataHandler {
     SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("email", email);
     Integer count = jdbcTemplate.queryForObject(query, namedParameters, Integer.class);
     return count != null && count > 0;
+  }
+
+  public User findUserByEmail(String email) {
+    String query = "Select * FROM users WHERE email = :email";
+    SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("email", email);
+
+    return jdbcTemplate.queryForObject(query, namedParameters, User.class);
+  }
+
+  public void saveList(ListifyList list) {
+    // TODO: implement this
   }
 }

@@ -3,3 +3,8 @@ export type ListDto = {
   listitems: string[],
 
 }
+
+export type CheckListItemDto = {
+  text: string,
+  checked: boolean,
+}

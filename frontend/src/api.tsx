@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
-import { ListDto } from "./dto";
+import { CheckListItemDto, ListDto } from "./dto";
 
 const SERVER_IP = null;
 const SERVER_PORT = null;
@@ -20,7 +20,7 @@ export const getListItems = async (): Promise<any> => {
   return list;
 };
 
-export const postList = async (items: string[], token: string) => {
+export const postList = async (items: CheckListItemDto[], token: string) => {
   console.log("Token:", token);
   console.log("Items to be sent:", items);
   console.log("Serialized Items:", JSON.stringify(items));

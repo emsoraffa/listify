@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ListifyList {
-  // TODO: listItems should be a hashmap with name, and checkedstatus
   private List<ListItem> listItems;
   private User user;
 
@@ -20,5 +19,11 @@ public class ListifyList {
 
   public static void main(String[] args) {
     System.out.println("Hello World!");
+  }
+
+  public void addListItems(ListItem... ListItem) {
+    for (ListItem listItem : listItems) {
+      listItems.add(listItem);
+    }
   }
 }
