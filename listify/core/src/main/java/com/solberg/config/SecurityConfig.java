@@ -5,9 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -31,7 +29,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.security.oauth2.core.OAuth2Error;
-import com.solberg.springboot.CustomOAuth2UserService;
+import com.solberg.service.CustomOAuth2UserService;
+import com.solberg.service.CustomOidcUserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +42,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 
 @Configuration
 public class SecurityConfig {
@@ -55,6 +52,9 @@ public class SecurityConfig {
 
   @Autowired
   private CustomOAuth2UserService customOAuth2UserService;
+
+  @Autowired
+  private CustomOidcUserService customOidcUserService;
 
   public SecurityConfig(OAuth2AuthorizedClientService authorizedClientService) {
     this.authorizedClientService = authorizedClientService;
@@ -87,6 +87,7 @@ public class SecurityConfig {
     return jwtDecoder;
   }
 
+  // Consider STATELESS?
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
@@ -98,7 +99,6 @@ public class SecurityConfig {
               configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
               return configuration;
             }))
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers("/", "/login**", "/error**", "/oauth2/**").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -109,11 +109,11 @@ public class SecurityConfig {
             .failureHandler(oAuth2LoginFailureHandler())
             .successHandler(oAuth2LoginSuccessHandler())
             .userInfoEndpoint()
-            .userService(customOAuth2UserService))
+            .userService(customOAuth2UserService)
+            .oidcUserService(customOidcUserService))
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
         .csrf().disable()
-        .headers().frameOptions().sameOrigin()
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .headers().frameOptions().sameOrigin();
     return http.build();
   }
 
@@ -134,6 +134,7 @@ public class SecurityConfig {
             String idToken = oidcUser.getIdToken().getTokenValue();
             logger.debug("OIDC ID Token: " + idToken);
             redirectUrl += "?token=" + idToken;
+
           } else {
             // For non-OIDC users, handle the access token
             OAuth2AuthorizedClient authorizedClient = authorizedClientService
