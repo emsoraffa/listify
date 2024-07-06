@@ -9,7 +9,7 @@ public class ModelsTest {
   public void testListifyList() {
     ListItem listItem = new ListItem("Milk");
     User user = new User("John Doe", "john@gmail.com");
-    ListifyList ListifyList = new ListifyList(user, listItem);
+    ListifyList ListifyList = new ListifyList(user, "testlist", listItem);
 
     assertEquals("John Doe", ListifyList.getUser().getName());
   }

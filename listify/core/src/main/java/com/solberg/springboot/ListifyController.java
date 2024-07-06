@@ -1,8 +1,5 @@
 package com.solberg.springboot;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,26 +8,19 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import com.solberg.models.ListItem;
 import com.solberg.models.ListifyList;
 import com.solberg.models.User;
 import com.solberg.persistence.DataHandler;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
@@ -56,7 +46,9 @@ public class ListifyController {
       return ResponseEntity.status(404).body(Map.of("message", "User not found"));
     }
 
-    ListifyList userList = new ListifyList(user);
+    logger.debug("Authorized by: " + user.toString());
+    // TODO: add listname
+    ListifyList userList = new ListifyList(user, "test");
 
     for (Map<String, Object> item : items) {
       String text = (String) item.get("text");
