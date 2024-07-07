@@ -1,4 +1,5 @@
 export type ListDto = {
+  list_name: string,
   author: string,
   listitems: string[],
 

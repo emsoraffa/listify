@@ -4,6 +4,7 @@ import "./styles.css";
 
 
 export function ListPage() {
+  //TODO: list name functionality.
   const saveList = () => {
 
   }

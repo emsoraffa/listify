@@ -53,17 +53,25 @@ public class DataHandler {
     try {
       return jdbcTemplate.queryForObject(query, namedParameters, new BeanPropertyRowMapper<>(User.class));
     } catch (EmptyResultDataAccessException e) {
-      // This exception is thrown if the query finds no rows in the database.
       return null;
     }
   }
 
   public void saveList(ListifyList list) {
-    logger.debug("SE HEEEER" + list.getListName() + ", " + list.getUser().getId());
     String query = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
     SqlParameterSource namedParameters = new MapSqlParameterSource()
         .addValue("list_name", list.getListName())
         .addValue("user_id", list.getUser().getId());
     jdbcTemplate.update(query, namedParameters);
+  }
+
+  public ListifyList findListById(int id) {
+    String query = "SELECT * FROM listify_lists WHERE id = :id";
+    SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+    try {
+      return jdbcTemplate.queryForObject(query, namedParameters, new BeanPropertyRowMapper<>(ListifyList.class));
+    } catch (EmptyResultDataAccessException e) {
+      return null;
+    }
   }
 }

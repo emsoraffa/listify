@@ -46,7 +46,7 @@ public class ListifyController {
       return ResponseEntity.status(404).body(Map.of("message", "User not found"));
     }
 
-    logger.debug("Authorized by: " + user.toString());
+    logger.debug("Posted by " + user.toString());
     // TODO: add listname
     ListifyList userList = new ListifyList(user, "test");
 
