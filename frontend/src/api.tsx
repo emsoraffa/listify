@@ -20,7 +20,7 @@ export const getListItems = async (): Promise<any> => {
   return list;
 };
 
-export const postList = async (items: CheckListItemDto[], token: string) => {
+export const postList = async (title: string, items: CheckListItemDto[], token: string) => {
   console.log("Token:", token);
   console.log("Items to be sent:", items);
   console.log("Serialized Items:", JSON.stringify(items));
