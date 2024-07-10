@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import './styles.css';
 import { useMediaQuery } from 'react-responsive';
-import { ListDto } from '../../dto';
+import { DashboardListDto, ListDto } from '../../dto';
 import { fetchUserLists } from '../../api';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -12,7 +12,7 @@ import { AuthContext } from '../../context/AuthContext';
 export function DashboardPage() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ query: '(max-width:1224px)' });
-  const [lists, setLists] = useState<ListDto[]>([]); // State to store the fetched data
+  const [lists, setLists] = useState<DashboardListDto[]>([]); // State to store the fetched data
   const authState = useContext(AuthContext);
 
   useEffect(() => {

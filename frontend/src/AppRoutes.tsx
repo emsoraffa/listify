@@ -13,7 +13,7 @@ export function AppRoutes() {
 
       <Route element={<SidebarOutlet />}>
 
-        <Route path="/li" element={<ProtectedRoute element={<ListPage />} />} />
+        <Route path="/li/:id" element={<ProtectedRoute element={<ListPage />} />} />
         <Route
           path="/dashboard"
           element={<ProtectedRoute element={<DashboardPage />} />}

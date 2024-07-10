@@ -57,12 +57,41 @@ public class DataHandler {
     }
   }
 
+  public ListifyList findListById(long id) {
+    String query = "SELECT * FROM listify_lists WHERE id = :id";
+    SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+
+    try {
+      return jdbcTemplate.queryForObject(query, namedParameters, new BeanPropertyRowMapper<>(ListifyList.class));
+    } catch (EmptyResultDataAccessException e) {
+      return null;
+    }
+
+  }
+
   public void saveList(ListifyList list) {
-    String query = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
-    SqlParameterSource namedParameters = new MapSqlParameterSource()
-        .addValue("list_name", list.getListName())
-        .addValue("user_id", list.getUser().getId());
-    jdbcTemplate.update(query, namedParameters);
+    if (list.getId() != null && listExists(list.getId())) {
+      // Update existing list
+      String updateQuery = "UPDATE listify_lists SET list_name = :list_name WHERE id = :id";
+      SqlParameterSource updateParameters = new MapSqlParameterSource()
+          .addValue("list_name", list.getListName())
+          .addValue("id", list.getId());
+      jdbcTemplate.update(updateQuery, updateParameters);
+    } else {
+      // Insert new list
+      String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
+      SqlParameterSource insertParameters = new MapSqlParameterSource()
+          .addValue("list_name", list.getListName())
+          .addValue("user_id", list.getUser().getId());
+      jdbcTemplate.update(insertQuery, insertParameters);
+    }
+  }
+
+  private boolean listExists(Long id) {
+    String query = "SELECT COUNT(*) FROM listify_lists WHERE id = :id";
+    SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+    Integer count = jdbcTemplate.queryForObject(query, namedParameters, Integer.class);
+    return count != null && count > 0;
   }
 
   public ListifyList findListById(int id) {

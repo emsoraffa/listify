@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ListifyList {
+  Long id;
   private String listName;
   private List<ListItem> listItems;
   private User user;
@@ -13,6 +14,10 @@ public class ListifyList {
     this.user = user;
     this.listName = listName;
     listItems = new ArrayList<>();
+  }
+
+  public ListifyList() {
+    this.listItems = new ArrayList<>();
   }
 
   public ListifyList(User user, String listName, ListItem... listItem) {
@@ -53,5 +58,13 @@ public class ListifyList {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 }

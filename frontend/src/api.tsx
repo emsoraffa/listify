@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
-import { CheckListItemDto, ListDto } from "./dto";
+import { CheckListItemDto, DashboardListDto, ListDto } from "./dto";
 
 const SERVER_IP = null;
 const SERVER_PORT = null;
@@ -20,10 +20,10 @@ export const getListItems = async (): Promise<any> => {
   return list;
 };
 
-export const postList = async (title: string, items: CheckListItemDto[], token: string) => {
+export const postList = async (list: ListDto, token: string) => {
   console.log("Token:", token);
-  console.log("Items to be sent:", items);
-  console.log("Serialized Items:", JSON.stringify(items));
+  console.log("Items to be sent:", list);
+  console.log("Serialized Items:", JSON.stringify(list));
 
   const response = await fetch(`${API_URL}/list`, {
     method: "POST",
@@ -31,7 +31,7 @@ export const postList = async (title: string, items: CheckListItemDto[], token: 
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(items)
+    body: JSON.stringify(list)
   });
 
   if (!response.ok) {
@@ -43,7 +43,25 @@ export const postList = async (title: string, items: CheckListItemDto[], token: 
   return data;
 }
 
-export const fetchUserLists = async (token: string): Promise<ListDto[]> => {
+export const fetchListById = async (token: string, id: number): Promise<ListDto> => {
+  const response = await fetch(`${API_URL}/li/${id}`, {
+    method: "GET",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error(`Network response was not ok: ${response.statusText}`)
+  }
+
+  const list: ListDto = await response.json();
+  return list;
+
+}
+
+export const fetchUserLists = async (token: string): Promise<DashboardListDto[]> => {
   const response = await fetch(`${API_URL}/dashboard/lists`, {
     method: "GET",
     headers: {
@@ -56,6 +74,6 @@ export const fetchUserLists = async (token: string): Promise<ListDto[]> => {
     throw new Error(`Network response was not ok: ${response.statusText}`)
   }
 
-  const lists: ListDto[] = await response.json();
+  const lists: DashboardListDto[] = await response.json();
   return lists;
 }
