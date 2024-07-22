@@ -21,6 +21,7 @@ public class ListDaoImplementation implements ListDao {
   }
 
   public void saveList(ListifyList list) {
+    // TODO: save listitems
     if (list.getId() != null && listExists(list.getId())) {
       // Update existing list
       String updateQuery = "UPDATE listify_lists SET list_name = :list_name WHERE id = :id";
@@ -29,7 +30,6 @@ public class ListDaoImplementation implements ListDao {
           .addValue("id", list.getId());
       jdbcTemplate.update(updateQuery, updateParameters);
     } else {
-      // Insert new list
       String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
       SqlParameterSource insertParameters = new MapSqlParameterSource()
           .addValue("list_name", list.getListName())
@@ -46,7 +46,7 @@ public class ListDaoImplementation implements ListDao {
   }
 
   public ListifyList findListById(long id) {
-    // TODO:add user field.
+    // TODO:add user field and listItems.
     String query = "SELECT * FROM listify_lists WHERE id = :id";
     SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
     try {
