@@ -25,7 +25,8 @@ import com.solberg.dto.ListDto;
 import com.solberg.models.ListItem;
 import com.solberg.models.ListifyList;
 import com.solberg.models.User;
-import com.solberg.persistence.DataHandler;
+import com.solberg.persistence.ListDao;
+import com.solberg.persistence.UserDao;
 
 @RestController
 @RequestMapping("/api")
@@ -34,7 +35,10 @@ public class ListifyController {
   private static final Logger logger = LoggerFactory.getLogger(ListifyController.class);
 
   @Autowired
-  private DataHandler dataHandler;
+  private UserDao userDao;
+
+  @Autowired
+  private ListDao listDao;
 
   @GetMapping("/test")
   public ListItem testList() {
@@ -43,7 +47,7 @@ public class ListifyController {
 
   @GetMapping("/li/{id}")
   public ResponseEntity<ListDto> getList(@PathVariable long id) {
-    ListifyList list = dataHandler.findListById(id);
+    ListifyList list = listDao.findListById(id);
 
     if (list == null) {
       return ResponseEntity.notFound().build();
@@ -68,7 +72,7 @@ public class ListifyController {
   public ResponseEntity<Map<String, Object>> postList(@RequestBody ListDto list,
       @AuthenticationPrincipal Jwt jwt) {
     logger.debug("Received list with name: " + list.getListName() + " and items: " + list.getListItems());
-    User user = dataHandler.findUserByEmail(jwt.getClaimAsString("email"));
+    User user = userDao.findUserByEmail(jwt.getClaimAsString("email"));
 
     if (user == null) {
       return ResponseEntity.status(404).body(Map.of("message", "User not found"));
@@ -77,13 +81,15 @@ public class ListifyController {
     logger.debug("Posted by " + user.toString());
 
     ListifyList userList;
+
     if (list.getId() != null) {
-      userList = dataHandler.findListById(list.getId());
+      userList = listDao.findListById(list.getId());
+      logger.debug(userList.toString());
       if (userList == null || !userList.getUser().equals(user)) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "List not found or access denied"));
       }
       userList.setListName(list.getListName());
-      userList.getListItems().clear(); // Clear existing items before adding new ones
+      userList.getListItems().clear();
     } else {
       userList = new ListifyList(user, list.getListName());
     }
@@ -92,7 +98,8 @@ public class ListifyController {
       userList.addListItems(new ListItem(item.getText(), item.isChecked()));
     }
 
-    dataHandler.saveList(userList);
+    listDao.saveList(userList);
+    logger.debug("Successfully saved " + userList.getListName());
 
     Map<String, Object> response = new HashMap<>();
     response.put("message", "Received " + list.getListItems().size() + " items");

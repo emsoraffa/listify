@@ -67,4 +67,12 @@ public class ListifyList {
   public void setId(Long id) {
     this.id = id;
   }
+
+  @Override
+  public String toString() {
+    if (this.getUser() == null)
+      return "List: " + this.getListName();
+
+    return "List: " + this.getListName() + " Authored by " + this.getUser().getName();
+  }
 }

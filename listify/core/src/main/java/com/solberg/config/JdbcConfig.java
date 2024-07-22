@@ -8,7 +8,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import com.solberg.persistence.DataHandler;
+import com.solberg.persistence.ListDao;
+import com.solberg.persistence.ListDaoImplementation;
+import com.solberg.persistence.UserDao;
+import com.solberg.persistence.UserDaoImplementation;
 
 @Configuration
 public class JdbcConfig {
@@ -27,8 +30,13 @@ public class JdbcConfig {
   }
 
   @Bean
-  public DataHandler dataHandler(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-    return new DataHandler(namedParameterJdbcTemplate);
+  public UserDao userDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    return new UserDaoImplementation(namedParameterJdbcTemplate);
+  }
+
+  @Bean
+  public ListDao listDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    return new ListDaoImplementation(namedParameterJdbcTemplate);
   }
 
 }

@@ -11,7 +11,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import com.solberg.persistence.DataHandler;
+import com.solberg.persistence.ListDao;
+import com.solberg.persistence.UserDao;
 
 import javax.sql.DataSource;
 
@@ -25,7 +26,10 @@ public class ListifyApplication implements CommandLineRunner {
   private static final Logger logger = LoggerFactory.getLogger(ListifyApplication.class);
 
   @Autowired
-  private DataHandler dataHandler;
+  private UserDao userDao;
+
+  @Autowired
+  private ListDao listDao;
 
   @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;

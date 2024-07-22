@@ -1,7 +1,7 @@
 package com.solberg.service;
 
 import com.solberg.models.User;
-import com.solberg.persistence.DataHandler;
+import com.solberg.persistence.UserDao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
   @Autowired
-  DataHandler datahandler;
+  UserDao userDao;
 
   private static final Logger logger = LoggerFactory.getLogger(CustomOAuth2UserService.class);
 
@@ -32,7 +32,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     logger.debug("Processing user: " + username);
 
     // process user
-    datahandler.registerUser(new User(username, email));
+    userDao.registerUser(new User(username, email));
 
     return oauth2User;
   }

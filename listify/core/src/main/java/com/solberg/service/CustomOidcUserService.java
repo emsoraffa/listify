@@ -1,7 +1,7 @@
 package com.solberg.service;
 
 import com.solberg.models.User;
-import com.solberg.persistence.DataHandler;
+import com.solberg.persistence.UserDao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class CustomOidcUserService extends OidcUserService {
   private static final Logger logger = LoggerFactory.getLogger(CustomOidcUserService.class);
 
   @Autowired
-  private DataHandler dataHandler;
+  UserDao userDao;
 
   @Override
   public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
@@ -31,7 +31,7 @@ public class CustomOidcUserService extends OidcUserService {
     logger.debug("Processing OIDC user: " + username);
 
     // process user
-    dataHandler.registerUser(new User(username, email));
+    userDao.registerUser(new User(username, email));
 
     return oidcUser;
   }

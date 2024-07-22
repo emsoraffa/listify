@@ -51,7 +51,6 @@ export const fetchListById = async (token: string, id: number): Promise<ListDto>
       'Authorization': `Bearer ${token}`,
     }
   })
-
   if (!response.ok) {
     throw new Error(`Network response was not ok: ${response.statusText}`)
   }
