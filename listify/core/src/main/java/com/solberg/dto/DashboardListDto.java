@@ -7,28 +7,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DashboardListDto {
 
   @JsonProperty("list_id")
-  private Long list_id;
-  private String list_name;
+  private Long listId;
+
+  @JsonProperty("list_name")
+  private String listName;
+
   private String author;
-  private List<CheckListItemDto> list_items;
+
+  @JsonProperty("list_items")
+  private List<CheckListItemDto> listItems;
 
   public DashboardListDto() {
 
   }
 
-  public DashboardListDto(Long list_id, String list_name, String author, List<CheckListItemDto> list_items) {
-    this.list_id = list_id;
-    this.list_name = list_name;
+  public DashboardListDto(Long listId, String listName, String author, List<CheckListItemDto> listItems) {
+    this.listId = listId;
+    this.listName = listName;
     this.author = author;
-    this.list_items = list_items;
+    this.listItems = listItems;
   }
 
-  public String getList_name() {
-    return list_name;
+  public String getListName() {
+    return listName;
   }
 
-  public void setList_name(String list_name) {
-    this.list_name = list_name;
+  public void setListName(String listName) {
+    this.listName = listName;
   }
 
   public String getAuthor() {
@@ -39,29 +44,29 @@ public class DashboardListDto {
     this.author = author;
   }
 
-  public List<CheckListItemDto> getList_items() {
-    return list_items;
+  public List<CheckListItemDto> getListItems() {
+    return listItems;
   }
 
-  public void setList_items(List<CheckListItemDto> list_items) {
-    this.list_items = list_items;
+  public void setListItems(List<CheckListItemDto> listItems) {
+    this.listItems = listItems;
   }
 
-  public Long getList_id() {
-    return list_id;
+  public Long getListId() {
+    return listId;
   }
 
-  public void setList_id(Long list_id) {
-    this.list_id = list_id;
+  public void setListId(Long listId) {
+    this.listId = listId;
   }
 
   @Override
   public String toString() {
     return "DashboardListDto{" +
-        "list_id=" + list_id +
-        ", list_name='" + list_name + '\'' +
+        "listId=" + listId +
+        ", listName='" + listName + '\'' +
         ", author='" + author + '\'' +
+        ", listItems=" + listItems +
         '}';
   }
-
 }

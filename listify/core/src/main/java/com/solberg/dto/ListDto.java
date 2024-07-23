@@ -1,19 +1,19 @@
 package com.solberg.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty; // Import Jackson annotation
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class ListDto {
+  @JsonProperty("id")
   private long id;
+
+  @JsonProperty("list_name")
   private String listName;
+
+  @JsonProperty("list_items")
   private List<CheckListItemDto> listItems;
 
   public ListDto() {
-  }
-
-  @JsonProperty("list_name")
-  public String getName() {
-    return listName;
   }
 
   public Long getId() {
@@ -24,11 +24,14 @@ public class ListDto {
     this.id = id;
   }
 
-  public void setName(String listName) {
+  public String getListName() {
+    return listName;
+  }
+
+  public void setListName(String listName) {
     this.listName = listName;
   }
 
-  @JsonProperty("listitems")
   public List<CheckListItemDto> getListItems() {
     return listItems;
   }

@@ -48,7 +48,7 @@ export function DashboardPage() {
           />
         ))
       ) : (
-        <div>Loading...</div>
+        <div className="empty-dashboard-text">So empty...</div>
       )}    </div>
   );
 }

@@ -3,7 +3,6 @@ export type DashboardListDto = {
   list_name: string,
   author: string,
   list_items: CheckListItemDto[],
-
 }
 
 export type ListDto = {
@@ -13,6 +12,7 @@ export type ListDto = {
 }
 
 export type CheckListItemDto = {
-  text: string,
-  checked: boolean,
+  id: number | null;
+  text: string;
+  checked: boolean;
 }

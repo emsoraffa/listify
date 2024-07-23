@@ -15,6 +15,12 @@ public class ListItem {
     this.state = state;
   }
 
+  public ListItem(String name, Boolean state, Long id) {
+    this.name = name;
+    this.state = state;
+    this.id = id;
+  }
+
   public ListItem() {
 
   }
@@ -43,4 +49,12 @@ public class ListItem {
     this.id = id;
   }
 
+  @Override
+  public String toString() {
+    return "ListItem{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", state=" + state +
+        '}';
+  }
 }

@@ -7,7 +7,7 @@ import { CustomText } from "../../types/slate";
 interface CheckListItemElementProps {
   attributes: any;
   children: any;
-  element: { type: 'check-list-item'; checked: boolean; children: CustomText[] };
+  element: { type: 'check-list-item'; id: number; checked: boolean; children: CustomText[] };
 }
 
 export function CheckListItemElement({

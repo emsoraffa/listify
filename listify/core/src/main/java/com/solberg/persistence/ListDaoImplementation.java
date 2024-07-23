@@ -3,6 +3,7 @@ package com.solberg.persistence;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -29,7 +30,6 @@ public class ListDaoImplementation implements ListDao {
   }
 
   public void saveList(ListifyList list) {
-    // Check if the list exists
     if (list.getId() != null && listExists(list.getId())) {
       // Update existing list
       String updateQuery = "UPDATE listify_lists SET list_name = :list_name WHERE id = :id";
@@ -49,12 +49,12 @@ public class ListDaoImplementation implements ListDao {
       Long generatedId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", new MapSqlParameterSource(),
           Long.class);
       list.setId(generatedId);
-
     }
 
     // Upsert list items
     for (ListItem item : list.getListItems()) {
       if (item.getId() == null || !listItemExists(item.getId())) {
+        logger.debug("Inserting new item " + item.getName());
         // Insert new list item
         String insertItemQuery = "INSERT INTO list_items (name, state, listify_list_id) VALUES (:name, :state, :list_id)";
         SqlParameterSource itemParameters = new MapSqlParameterSource()
@@ -63,6 +63,7 @@ public class ListDaoImplementation implements ListDao {
             .addValue("list_id", list.getId());
         jdbcTemplate.update(insertItemQuery, itemParameters);
       } else {
+        logger.debug("Updating existing item:" + item.getName());
         // Update existing list item
         String updateItemQuery = "UPDATE list_items SET name = :name, state = :state WHERE id = :id";
         SqlParameterSource itemParameters = new MapSqlParameterSource()
@@ -74,12 +75,25 @@ public class ListDaoImplementation implements ListDao {
     }
 
     // Delete items that are no longer in the list
-    String deleteQuery = "DELETE FROM list_items WHERE listify_list_id = :list_id AND id NOT IN (:item_ids)";
-    List<Long> itemIds = list.getListItems().stream().map(ListItem::getId).collect(Collectors.toList());
-    SqlParameterSource deleteParameters = new MapSqlParameterSource()
-        .addValue("list_id", list.getId())
-        .addValue("item_ids", itemIds);
-    jdbcTemplate.update(deleteQuery, deleteParameters);
+    List<Long> itemIds = list.getListItems().stream()
+        .map(ListItem::getId)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+    if (!itemIds.isEmpty()) {
+      String deleteQuery = "DELETE FROM list_items WHERE listify_list_id = :list_id AND id NOT IN (:item_ids)";
+      SqlParameterSource deleteParameters = new MapSqlParameterSource()
+          .addValue("list_id", list.getId())
+          .addValue("item_ids", itemIds);
+      jdbcTemplate.update(deleteQuery, deleteParameters);
+    } else {
+      // If no items, delete all items associated with the list
+      String deleteQuery = "DELETE FROM list_items WHERE listify_list_id = :list_id";
+      SqlParameterSource deleteParameters = new MapSqlParameterSource()
+          .addValue("list_id", list.getId());
+      jdbcTemplate.update(deleteQuery, deleteParameters);
+      logger.debug("fack");
+    }
 
     logger.debug("Saved list " + list.toString() + " to database.");
   }

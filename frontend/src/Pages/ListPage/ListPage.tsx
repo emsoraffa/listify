@@ -24,6 +24,7 @@ export function ListPage() {
   const [listItems, setListItems] = useState<Descendant[]>([{
     type: 'check-list-item',
     checked: false,
+    id: null,
     children: [{ text: '...' }],
   }]);
   const [titleEditorKey, setTitleEditorKey] = useState(0);
@@ -42,6 +43,7 @@ export function ListPage() {
       .filter(isElement)
       .filter(isCheckListItemElement)
       .map(item => ({
+        id: item.id,
         text: item.children[0].text,
         checked: item.checked,
       }));
@@ -66,8 +68,9 @@ export function ListPage() {
           setTitle([{ type: 'title', children: [{ text: data.list_name }] }]);
           setListItems(data.list_items.map(item => ({
             type: 'check-list-item',
+            id: item.id,
             checked: item.checked,
-            children: [{ text: item.text }]
+            children: [{ text: item.text || '' }]
           })));
           setTitleEditorKey(prevKey => prevKey + 1);
           setListEditorKey(prevKey => prevKey + 1);

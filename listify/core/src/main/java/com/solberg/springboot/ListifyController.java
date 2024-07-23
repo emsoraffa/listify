@@ -64,9 +64,12 @@ public class ListifyController {
   private ListDto convertToListDto(ListifyList list) {
     ListDto listDto = new ListDto();
     listDto.setId(list.getId());
-    listDto.setName(list.getName());
+    listDto.setListName(list.getName());
     listDto.setListItems(list.getListItems().stream()
-        .map(item -> new CheckListItemDto(item.getName(), item.getState()))
+        .map(item -> new CheckListItemDto(
+            item.getId(),
+            item.getName() != null ? item.getName() : "", // Handle null or provide a default value
+            item.getState()))
         .collect(Collectors.toList()));
     return listDto;
   }
@@ -74,7 +77,7 @@ public class ListifyController {
   @PostMapping("/list")
   public ResponseEntity<Map<String, Object>> postList(@RequestBody ListDto list,
       @AuthenticationPrincipal Jwt jwt) {
-    logger.debug("Received list with name: " + list.getName() + " and items: " + list.getListItems());
+    logger.debug("Received list with name: " + list.getListName() + " and items: " + list.getListItems());
     User user = userDao.findUserByEmail(jwt.getClaimAsString("email"));
 
     if (user == null) {
@@ -92,20 +95,32 @@ public class ListifyController {
         logger.debug("list not found or access denied");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "List not found or access denied"));
       }
-      userList.setName(list.getName());
-      userList.getListItems().clear();
+      userList.setName(list.getListName());
+      userList.getListItems().clear(); // Clear existing items
+      logger.debug("Overwriting list...");
+
     } else {
-      userList = new ListifyList(user, list.getName());
+      userList = new ListifyList(user, list.getListName());
+      logger.debug("Creating new list...");
+
     }
 
-    // TODO: error handling
-    logger.debug("Now the list has no listitems");
     if (list.getListItems() != null) {
       for (CheckListItemDto item : list.getListItems()) {
-        userList.addListItems(new ListItem(item.getText(), item.isChecked()));
+        ListItem listItem;
+        if (item.getId() != null) {
+          listItem = new ListItem(item.getText(), item.isChecked());
+          listItem.setId(item.getId());
+          logger.debug("Updated existing item: " + item.toString());
+        } else {
+          listItem = new ListItem(item.getText(), item.isChecked());
+          logger.debug("Added new item: " + item.toString());
+        }
+        userList.addListItems(listItem);
       }
+    } else {
+      logger.debug("No new items to add");
     }
-
     listDao.saveList(userList);
     logger.debug("Successfully saved " + userList.getName());
 
@@ -118,7 +133,6 @@ public class ListifyController {
 
   @GetMapping("/dashboard/lists")
   public ResponseEntity<Map<String, Object>> getUserLists(@AuthenticationPrincipal Jwt jwt) {
-    // TODO: update to use responseentity
 
     String username = jwt.getClaimAsString("name");
     String email = jwt.getClaimAsString("email");
@@ -131,7 +145,7 @@ public class ListifyController {
     for (ListifyList list : user.getListifyLists()) {
       List<CheckListItemDto> itemDtos = new ArrayList<>();
       for (ListItem item : list.getListItems()) {
-        itemDtos.add(new CheckListItemDto(item.getName(), item.getState()));
+        itemDtos.add(new CheckListItemDto(item.getId(), item.getName(), item.getState()));
       }
       userListsDto.add(new DashboardListDto(list.getId(), list.getName(), user.getName(), itemDtos));
     }
