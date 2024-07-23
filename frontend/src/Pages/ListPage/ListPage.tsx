@@ -16,17 +16,19 @@ export function ListPage() {
   const titleEditorRef = useRef<any>(null);
   const listEditorRef = useRef<any>(null);
 
-  const { id } = useParams<string>(); // assuming id is string, adjust as necessary
+  const { id } = useParams<string>();
   const authState = useContext(AuthContext);
 
   const [title, setTitle] = useState<Descendant[]>([
-    { type: 'title', children: [{ text: 'My List Title' }] }
+    { type: 'title', children: [{ text: 'Loading...' }] }
   ]);
   const [listItems, setListItems] = useState<Descendant[]>([{
     type: 'check-list-item',
     checked: false,
-    children: [{ text: 'Milk' }],
+    children: [{ text: '...' }],
   }]);
+  const [titleEditorKey, setTitleEditorKey] = useState(0);
+  const [listEditorKey, setListEditorKey] = useState(1);
 
   const handleSave = useCallback(() => {
     const titleElement = title.find(isElement);
@@ -53,8 +55,9 @@ export function ListPage() {
   }, [title, listItems, authState, id]);
 
   const debouncedSave = useCallback(debounce(() => {
+    console.log("debounce")
     handleSave();
-  }, 10000), [handleSave]);
+  }, 2000), [handleSave]);
 
   useEffect(() => {
     if (authState?.token && id) {
@@ -67,6 +70,8 @@ export function ListPage() {
             checked: item.checked,
             children: [{ text: item.text }]
           })));
+          setTitleEditorKey(prevKey => prevKey + 1);
+          setListEditorKey(prevKey => prevKey + 1);
           console.log("States are set")
         })
         .catch(error => {
@@ -77,8 +82,16 @@ export function ListPage() {
 
   return (
     <div className="container">
-      <TitleEditor title={title} ref={titleEditorRef} onFocusNext={() => listEditorRef.current?.focus()} setTitle={setTitle} />
-      <ListEditor listItems={listItems} ref={listEditorRef} setListItems={setListItems} debouncedSave={debouncedSave} />
+      <TitleEditor title={title}
+        ref={titleEditorRef}
+        onFocusNext={() => listEditorRef.current?.focus()}
+        setTitle={setTitle}
+        key={titleEditorKey} />
+      <ListEditor listItems={listItems}
+        ref={listEditorRef}
+        setListItems={setListItems}
+        debouncedSave={debouncedSave}
+        key={listEditorKey} />
       <Button onClick={handleSave}>Save</Button>
     </div>
   );
