@@ -67,12 +67,13 @@ export const fetchUserLists = async (token: string): Promise<DashboardListDto[]>
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     }
+
   })
 
   if (!response.ok) {
     throw new Error(`Network response was not ok: ${response.statusText}`)
   }
 
-  const lists: DashboardListDto[] = await response.json();
-  return lists;
+  const data = await response.json();
+  return data.items;
 }

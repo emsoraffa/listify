@@ -11,6 +11,7 @@ import { ListCard } from '../../Components';
 
 
 export function DashboardPage() {
+  //TODO: handle empty dashboard
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ query: '(max-width:1224px)' });
   const [lists, setLists] = useState<DashboardListDto[]>([]); // State to store the fetched data
@@ -19,22 +20,35 @@ export function DashboardPage() {
   useEffect(() => {
     if (authState?.token) {
       fetchUserLists(authState.token)
-        .then(list => setLists(list))  // Store fetched data in state
+        .then(lists => {
+          setLists(lists)
+          console.log("Fetched lists: ")
+          console.log(lists)
+        })  // Store fetched data in state
         .catch((err) => console.log(err.message));
-
-      console.log(lists);
 
     }
     else navigate("/login");
-  }, []);
+  }, [authState?.token, navigate]);
+
+  const handleCardClick = (id: number) => {
+    navigate(`/li/${id}`)
+  }
 
   return (
     <div className="content-container">
       <h2>My lists</h2>
-      {/* Render each ListDto's author and list items */}
-      {lists.map((list, index) => (
-        <ListCard list_name={list.list_name} author={list.author} />
-      ))}
-    </div>
+      {lists.length > 0 ? (
+        lists.map((list) => (
+          <ListCard
+            key={list.list_id} // Use list_id as key
+            list_name={list.list_name}
+            author={list.author}
+            onClick={() => handleCardClick(list.list_id)} // Pass a function to onClick
+          />
+        ))
+      ) : (
+        <div>Loading...</div>
+      )}    </div>
   );
 }

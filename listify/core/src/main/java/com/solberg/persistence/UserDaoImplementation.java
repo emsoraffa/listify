@@ -2,6 +2,7 @@ package com.solberg.persistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,6 +15,9 @@ public class UserDaoImplementation implements UserDao {
   private final NamedParameterJdbcTemplate jdbcTemplate;
 
   private static final Logger logger = LoggerFactory.getLogger(UserDaoImplementation.class);
+
+  @Autowired
+  ListDao listDao;
 
   public UserDaoImplementation(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
@@ -46,6 +50,11 @@ public class UserDaoImplementation implements UserDao {
     } catch (EmptyResultDataAccessException e) {
       return null;
     }
+  }
+
+  public User fetchUserLists(User user) {
+    user.setListifyLists(listDao.findListsByUserId(user.getId()));
+    return user;
   }
 
 }

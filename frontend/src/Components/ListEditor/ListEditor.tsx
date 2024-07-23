@@ -30,8 +30,10 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
 
   const onChange = (newValue: Descendant[]) => {
     setListItems(newValue);
-    debouncedSave();
+    //TODO: fix autosave 
+    //debouncedSave();
   };
+
 
   return (
     <Slate editor={editor} initialValue={listItems} onChange={onChange}>

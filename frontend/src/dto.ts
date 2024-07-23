@@ -1,14 +1,15 @@
 export type DashboardListDto = {
+  list_id: number,
   list_name: string,
   author: string,
-  listitems: CheckListItemDto[],
+  list_items: CheckListItemDto[],
 
 }
 
 export type ListDto = {
   id: number;
   list_name: string,
-  listitems: CheckListItemDto[],
+  list_items: CheckListItemDto[],
 }
 
 export type CheckListItemDto = {

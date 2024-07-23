@@ -1,5 +1,6 @@
 package com.solberg.springboot;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.solberg.dto.CheckListItemDto;
+import com.solberg.dto.DashboardListDto;
 import com.solberg.dto.ListDto;
 import com.solberg.models.ListItem;
 import com.solberg.models.ListifyList;
@@ -55,6 +57,7 @@ public class ListifyController {
 
     ListDto listDto = convertToListDto(list);
 
+    logger.debug("Retrieved list: " + listDto.toString());
     return ResponseEntity.ok(listDto);
   }
 
@@ -95,9 +98,12 @@ public class ListifyController {
       userList = new ListifyList(user, list.getName());
     }
 
+    // TODO: error handling
     logger.debug("Now the list has no listitems");
-    for (CheckListItemDto item : list.getListItems()) {
-      userList.addListItems(new ListItem(item.getText(), item.isChecked()));
+    if (list.getListItems() != null) {
+      for (CheckListItemDto item : list.getListItems()) {
+        userList.addListItems(new ListItem(item.getText(), item.isChecked()));
+      }
     }
 
     listDao.saveList(userList);
@@ -111,19 +117,33 @@ public class ListifyController {
   }
 
   @GetMapping("/dashboard/lists")
-  public List<Map<String, Object>> getUserLists(@AuthenticationPrincipal Jwt jwt) {
+  public ResponseEntity<Map<String, Object>> getUserLists(@AuthenticationPrincipal Jwt jwt) {
     // TODO: update to use responseentity
 
     String username = jwt.getClaimAsString("name");
     String email = jwt.getClaimAsString("email");
 
-    logger.debug("Accessed by: " + username.toString());
+    User user = userDao.findUserByEmail(email);
+    user = userDao.fetchUserLists(user);
 
-    Map<String, Object> list = new HashMap<>();
-    list.put("author", "John Doe"); // Author's name
-    list.put("listitems", Collections.singletonList("Milk")); // List of items
+    List<DashboardListDto> userListsDto = new ArrayList<>();
 
-    // Return a list containing the map
-    return Collections.singletonList(list);
+    for (ListifyList list : user.getListifyLists()) {
+      List<CheckListItemDto> itemDtos = new ArrayList<>();
+      for (ListItem item : list.getListItems()) {
+        itemDtos.add(new CheckListItemDto(item.getName(), item.getState()));
+      }
+      userListsDto.add(new DashboardListDto(list.getId(), list.getName(), user.getName(), itemDtos));
+    }
+
+    logger.debug("User lists retrieved: " + userListsDto.toString());
+
+    // TODO: retrieve collaborated lists.
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("message", "Received " + user.getListifyLists().size() + " items");
+    response.put("items", userListsDto);
+
+    return ResponseEntity.ok(response);
   }
 }

@@ -36,4 +36,13 @@ public class ListDto {
   public void setListItems(List<CheckListItemDto> listItems) {
     this.listItems = listItems;
   }
+
+  @Override
+  public String toString() {
+    return "ListDto{" +
+        "id=" + id +
+        ", listName='" + listName + '\'' +
+        ", listItems=" + listItems +
+        '}';
+  }
 }

@@ -121,6 +121,17 @@ public class ListDaoImplementation implements ListDao {
     }
   }
 
+  public List<ListifyList> findListsByUserId(Long userId) {
+    String query = "SELECT ll.id AS list_id, ll.list_name AS list_name, " +
+        "u.id AS user_id, u.name AS user_name, u.email AS user_email " +
+        "FROM listify_lists ll " +
+        "JOIN users u ON u.id = ll.user_id " +
+        "WHERE u.id = :user_id";
+    SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("user_id", userId);
+    return jdbcTemplate.query(query, namedParameters, new ListifyListRowMapper());
+
+  }
+
   private static final class ListifyListRowMapper implements RowMapper<ListifyList> {
     @Override
     public ListifyList mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -151,4 +162,5 @@ public class ListDaoImplementation implements ListDao {
 
     }
   }
+
 }

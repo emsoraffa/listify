@@ -38,7 +38,7 @@ export function ListPage() {
       return;
     }
 
-    const listitems = listItems
+    const list_items = listItems
       .filter(isElement)
       .filter(isCheckListItemElement)
       .map(item => ({
@@ -47,7 +47,7 @@ export function ListPage() {
       }));
 
     if (authState?.token && id) {
-      postList({ id: parseInt(id), list_name, listitems }, authState.token)
+      postList({ id: parseInt(id), list_name, list_items }, authState.token)
         .then(response => console.log('Data posted successfully:', response))
         .catch(error => console.error('Error posting data:', error));
     }
@@ -62,9 +62,9 @@ export function ListPage() {
     if (authState?.token && id) {
       fetchListById(authState.token, parseInt(id))
         .then(data => {
-          console.log("Fetched listname:" + data.list_name + ", and listitems: " + JSON.stringify(data.listitems))
+          console.log("Fetched listname:" + data.list_name + ", and listitems: " + JSON.stringify(data.list_items))
           setTitle([{ type: 'title', children: [{ text: data.list_name }] }]);
-          setListItems(data.listitems.map(item => ({
+          setListItems(data.list_items.map(item => ({
             type: 'check-list-item',
             checked: item.checked,
             children: [{ text: item.text }]
