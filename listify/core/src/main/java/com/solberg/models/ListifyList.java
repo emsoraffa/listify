@@ -70,9 +70,11 @@ public class ListifyList {
 
   @Override
   public String toString() {
-    if (this.getUser() == null)
-      return "List: " + this.getName();
-
-    return "List: " + this.getName() + " Authored by " + this.getUser().getName();
+    String userString = (user != null) ? " Authored by " + user.getName() : "";
+    String itemsSummary = listItems != null ? " with " + listItems.size() + " item(s)" : "";
+    return "List ID: " + id +
+        ", Name: " + listName +
+        itemsSummary +
+        userString;
   }
 }

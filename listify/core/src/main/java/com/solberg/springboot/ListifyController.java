@@ -93,7 +93,7 @@ public class ListifyController {
     } else {
       userList = new ListifyList(user, list.getName());
     }
-
+    logger.debug("Now the list has no listitems");
     for (CheckListItemDto item : list.getListItems()) {
       userList.addListItems(new ListItem(item.getText(), item.isChecked()));
     }

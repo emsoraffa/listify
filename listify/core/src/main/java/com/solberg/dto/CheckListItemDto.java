@@ -31,4 +31,12 @@ public class CheckListItemDto {
   public void setChecked(boolean checked) {
     this.checked = checked;
   }
+
+  @Override
+  public String toString() {
+    return "CheckListItemDto{" +
+        "text='" + text + '\'' +
+        ", checked=" + checked +
+        '}';
+  }
 }

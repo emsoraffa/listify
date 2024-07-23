@@ -54,13 +54,13 @@ export function ListPage() {
 
   const debouncedSave = useCallback(debounce(() => {
     handleSave();
-  }, 2000), [handleSave]);
+  }, 10000), [handleSave]);
 
   useEffect(() => {
     if (authState?.token && id) {
       fetchListById(authState.token, parseInt(id))
         .then(data => {
-          console.log("Fetched listname:" + data.list_name + ", and listitems: " + data.listitems)
+          console.log("Fetched listname:" + data.list_name + ", and listitems: " + JSON.stringify(data.listitems))
           setTitle([{ type: 'title', children: [{ text: data.list_name }] }]);
           setListItems(data.listitems.map(item => ({
             type: 'check-list-item',
