@@ -49,6 +49,7 @@ public class ListDaoImplementation implements ListDao {
       Long generatedId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", new MapSqlParameterSource(),
           Long.class);
       list.setId(generatedId);
+
     }
 
     // Upsert list items
@@ -79,6 +80,8 @@ public class ListDaoImplementation implements ListDao {
         .addValue("list_id", list.getId())
         .addValue("item_ids", itemIds);
     jdbcTemplate.update(deleteQuery, deleteParameters);
+
+    logger.debug("Saved list " + list.toString() + " to database.");
   }
 
   private boolean listItemExists(Long id) {
