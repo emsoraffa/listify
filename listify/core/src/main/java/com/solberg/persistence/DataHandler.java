@@ -74,14 +74,14 @@ public class DataHandler {
       // Update existing list
       String updateQuery = "UPDATE listify_lists SET list_name = :list_name WHERE id = :id";
       SqlParameterSource updateParameters = new MapSqlParameterSource()
-          .addValue("list_name", list.getListName())
+          .addValue("list_name", list.getName())
           .addValue("id", list.getId());
       jdbcTemplate.update(updateQuery, updateParameters);
     } else {
       // Insert new list
       String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
       SqlParameterSource insertParameters = new MapSqlParameterSource()
-          .addValue("list_name", list.getListName())
+          .addValue("list_name", list.getName())
           .addValue("user_id", list.getUser().getId());
       jdbcTemplate.update(insertQuery, insertParameters);
     }

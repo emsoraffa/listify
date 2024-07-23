@@ -1,6 +1,7 @@
 package com.solberg.models;
 
 public class ListItem {
+  private Long id;
   private String name;
   private Boolean state; // Defaults to false.
 
@@ -32,6 +33,14 @@ public class ListItem {
 
   public void setState(Boolean state) {
     this.state = state;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
 }

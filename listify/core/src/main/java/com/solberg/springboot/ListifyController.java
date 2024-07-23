@@ -61,7 +61,7 @@ public class ListifyController {
   private ListDto convertToListDto(ListifyList list) {
     ListDto listDto = new ListDto();
     listDto.setId(list.getId());
-    listDto.setListName(list.getListName());
+    listDto.setName(list.getName());
     listDto.setListItems(list.getListItems().stream()
         .map(item -> new CheckListItemDto(item.getName(), item.getState()))
         .collect(Collectors.toList()));
@@ -71,7 +71,7 @@ public class ListifyController {
   @PostMapping("/list")
   public ResponseEntity<Map<String, Object>> postList(@RequestBody ListDto list,
       @AuthenticationPrincipal Jwt jwt) {
-    logger.debug("Received list with name: " + list.getListName() + " and items: " + list.getListItems());
+    logger.debug("Received list with name: " + list.getName() + " and items: " + list.getListItems());
     User user = userDao.findUserByEmail(jwt.getClaimAsString("email"));
 
     if (user == null) {
@@ -88,10 +88,10 @@ public class ListifyController {
       if (userList == null || !userList.getUser().equals(user)) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "List not found or access denied"));
       }
-      userList.setListName(list.getListName());
+      userList.setName(list.getName());
       userList.getListItems().clear();
     } else {
-      userList = new ListifyList(user, list.getListName());
+      userList = new ListifyList(user, list.getName());
     }
 
     for (CheckListItemDto item : list.getListItems()) {
@@ -99,7 +99,7 @@ public class ListifyController {
     }
 
     listDao.saveList(userList);
-    logger.debug("Successfully saved " + userList.getListName());
+    logger.debug("Successfully saved " + userList.getName());
 
     Map<String, Object> response = new HashMap<>();
     response.put("message", "Received " + list.getListItems().size() + " items");

@@ -40,11 +40,11 @@ public class ListifyList {
     }
   }
 
-  public String getListName() {
+  public String getName() {
     return listName;
   }
 
-  public void setListName(String listName) {
+  public void setName(String listName) {
     this.listName = listName;
   }
 
@@ -71,8 +71,8 @@ public class ListifyList {
   @Override
   public String toString() {
     if (this.getUser() == null)
-      return "List: " + this.getListName();
+      return "List: " + this.getName();
 
-    return "List: " + this.getListName() + " Authored by " + this.getUser().getName();
+    return "List: " + this.getName() + " Authored by " + this.getUser().getName();
   }
 }

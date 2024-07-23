@@ -12,7 +12,7 @@ public class ListDto {
   }
 
   @JsonProperty("list_name")
-  public String getListName() {
+  public String getName() {
     return listName;
   }
 
@@ -24,11 +24,11 @@ public class ListDto {
     this.id = id;
   }
 
-  public void setListName(String listName) {
+  public void setName(String listName) {
     this.listName = listName;
   }
 
-  @JsonProperty("listitems") // Ensure this matches exactly what's sent from the frontend
+  @JsonProperty("listitems")
   public List<CheckListItemDto> getListItems() {
     return listItems;
   }

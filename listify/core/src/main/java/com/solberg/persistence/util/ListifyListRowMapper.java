@@ -14,7 +14,7 @@ public class ListifyListRowMapper implements RowMapper<ListifyList> {
   public ListifyList mapRow(ResultSet rs, int rowNum) throws SQLException {
     ListifyList list = new ListifyList();
     list.setId(rs.getLong("id"));
-    list.setListName(rs.getString("list_name"));
+    list.setName(rs.getString("list_name"));
 
     User user = new User();
     user.setId(rs.getLong("user_id"));
