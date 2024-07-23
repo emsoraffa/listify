@@ -6,6 +6,7 @@ import { useMediaQuery } from 'react-responsive';
 import { DashboardListDto, ListDto } from '../../dto';
 import { fetchUserLists } from '../../api';
 import { AuthContext } from '../../context/AuthContext';
+import { ListCard } from '../../Components';
 
 
 
@@ -29,12 +30,10 @@ export function DashboardPage() {
 
   return (
     <div className="content-container">
-      <h2>Big text things</h2>
+      <h2>My lists</h2>
       {/* Render each ListDto's author and list items */}
       {lists.map((list, index) => (
-        <div key={index}>
-          <h3>{list.author}</h3>
-        </div>
+        <ListCard list_name={list.list_name} author={list.author} />
       ))}
     </div>
   );
