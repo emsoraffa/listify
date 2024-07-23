@@ -85,7 +85,8 @@ public class ListifyController {
     if (list.getId() != null) {
       userList = listDao.findListById(list.getId());
       logger.debug(userList.toString());
-      if (userList == null || !userList.getUser().equals(user)) {
+      if (userList == null || !userList.getUser().getId().equals(user.getId())) {
+        logger.debug("list not found or access denied");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "List not found or access denied"));
       }
       userList.setName(list.getName());
@@ -93,6 +94,7 @@ public class ListifyController {
     } else {
       userList = new ListifyList(user, list.getName());
     }
+
     logger.debug("Now the list has no listitems");
     for (CheckListItemDto item : list.getListItems()) {
       userList.addListItems(new ListItem(item.getText(), item.isChecked()));

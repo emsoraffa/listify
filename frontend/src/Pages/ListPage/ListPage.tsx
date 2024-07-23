@@ -12,7 +12,6 @@ import { CheckListItemDto } from "../../dto";
 import { useParams } from "react-router-dom";
 
 export function ListPage() {
-  //TODO: programatically change editor states.
   const titleEditorRef = useRef<any>(null);
   const listEditorRef = useRef<any>(null);
 
