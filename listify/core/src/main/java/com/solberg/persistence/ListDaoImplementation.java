@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.solberg.models.ListItem;
 import com.solberg.models.ListifyList;
@@ -38,43 +40,35 @@ public class ListDaoImplementation implements ListDao {
           .addValue("id", list.getId());
       jdbcTemplate.update(updateQuery, updateParameters);
     } else {
-      // Create new list
+      // Insert new list and fetch ID
       String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
-      SqlParameterSource insertParameters = new MapSqlParameterSource()
+      KeyHolder keyHolder = new GeneratedKeyHolder();
+      jdbcTemplate.update(insertQuery, new MapSqlParameterSource()
           .addValue("list_name", list.getName())
-          .addValue("user_id", list.getUser().getId());
-      jdbcTemplate.update(insertQuery, insertParameters);
-
-      // Set the generated ID back to the list
-      Long generatedId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", new MapSqlParameterSource(),
-          Long.class);
-      list.setId(generatedId);
+          .addValue("user_id", list.getUser().getId()), keyHolder, new String[] { "ID" });
+      list.setId(keyHolder.getKey().longValue());
     }
 
-    // Upsert list items
-    for (ListItem item : list.getListItems()) {
+    // Handle list items
+    list.getListItems().forEach(item -> {
       if (item.getId() == null || !listItemExists(item.getId())) {
-        logger.debug("Inserting new item " + item.getName());
         // Insert new list item
         String insertItemQuery = "INSERT INTO list_items (name, state, listify_list_id) VALUES (:name, :state, :list_id)";
-        SqlParameterSource itemParameters = new MapSqlParameterSource()
+        jdbcTemplate.update(insertItemQuery, new MapSqlParameterSource()
             .addValue("name", item.getName())
             .addValue("state", item.getState())
-            .addValue("list_id", list.getId());
-        jdbcTemplate.update(insertItemQuery, itemParameters);
+            .addValue("list_id", list.getId()));
       } else {
-        logger.debug("Updating existing item:" + item.getName());
         // Update existing list item
         String updateItemQuery = "UPDATE list_items SET name = :name, state = :state WHERE id = :id";
-        SqlParameterSource itemParameters = new MapSqlParameterSource()
+        jdbcTemplate.update(updateItemQuery, new MapSqlParameterSource()
             .addValue("name", item.getName())
             .addValue("state", item.getState())
-            .addValue("id", item.getId());
-        jdbcTemplate.update(updateItemQuery, itemParameters);
+            .addValue("id", item.getId()));
       }
-    }
+    });
 
-    // Delete items that are no longer in the list
+    // Delete items no longer in the list only if itemIds is not empty
     List<Long> itemIds = list.getListItems().stream()
         .map(ListItem::getId)
         .filter(Objects::nonNull)
@@ -82,20 +76,10 @@ public class ListDaoImplementation implements ListDao {
 
     if (!itemIds.isEmpty()) {
       String deleteQuery = "DELETE FROM list_items WHERE listify_list_id = :list_id AND id NOT IN (:item_ids)";
-      SqlParameterSource deleteParameters = new MapSqlParameterSource()
+      jdbcTemplate.update(deleteQuery, new MapSqlParameterSource()
           .addValue("list_id", list.getId())
-          .addValue("item_ids", itemIds);
-      jdbcTemplate.update(deleteQuery, deleteParameters);
-    } else {
-      // If no items, delete all items associated with the list
-      String deleteQuery = "DELETE FROM list_items WHERE listify_list_id = :list_id";
-      SqlParameterSource deleteParameters = new MapSqlParameterSource()
-          .addValue("list_id", list.getId());
-      jdbcTemplate.update(deleteQuery, deleteParameters);
-      logger.debug("fack");
+          .addValue("item_ids", itemIds));
     }
-
-    logger.debug("Saved list " + list.toString() + " to database.");
   }
 
   private boolean listItemExists(Long id) {

@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useState, useContext, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
-import { BaseEditor, createEditor, Descendant, Editor, Element as SlateElement, Point, Range as SlateRange, Transforms } from 'slate';
+import { BaseEditor, createEditor, Descendant, Editor, Element as SlateElement, Path, Point, Range as SlateRange, Transforms } from 'slate';
 import { withHistory, HistoryEditor } from 'slate-history';
 import { TextElement, TextElementProps } from '../TextElement';
 
@@ -50,14 +50,13 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
 //Overrides the deleteBackward method to transform a checklist item into a paragraph 
 //if the cursor is at the start of a checklist item and the delete or backspace key is pressed.
 const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
-  const { deleteBackward } = editor;
+  const { deleteBackward, insertBreak } = editor;
 
   editor.deleteBackward = (...args) => {
     const { selection } = editor;
-
     if (selection && SlateRange.isCollapsed(selection)) {
       const [match] = Editor.nodes(editor, {
-        match: (n) =>
+        match: n =>
           !Editor.isEditor(n) &&
           SlateElement.isElement(n) &&
           n.type === 'check-list-item',
@@ -71,8 +70,8 @@ const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
           const newProperties: Partial<SlateElement> = {
             type: 'paragraph',
           };
-          Transforms.setNodes(editor, newProperties, {
-            match: (n) =>
+          Transforms.setNodes<SlateElement>(editor, newProperties, {
+            match: n =>
               !Editor.isEditor(n) &&
               SlateElement.isElement(n) &&
               n.type === 'check-list-item',
@@ -85,5 +84,37 @@ const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
     deleteBackward(...args);
   };
 
+  editor.insertBreak = () => {
+    const { selection } = editor;
+    if (selection) {
+      const [match] = Editor.nodes(editor, {
+        match: n => SlateElement.isElement(n) && n.type === 'check-list-item',
+        at: selection,
+      });
+
+      if (match) {
+        const [node, path] = match as [SlateElement, Path];
+        if (Editor.isEnd(editor, selection.anchor, path)) {
+          // Insert a new checklist item with id: null when "Enter" is pressed at the end of a checklist item
+          const newChecklistItem: SlateElement = {
+            type: 'check-list-item',
+            id: null,
+            checked: false,
+            children: [{ text: '' }],
+          };
+          Transforms.insertNodes(editor, newChecklistItem, { at: Path.next(path) });
+          // Move the cursor to the start of the new checklist item
+          const newPath = Path.next(path);
+          Transforms.select(editor, Editor.start(editor, newPath));
+          return;
+        }
+      }
+    }
+
+    insertBreak();
+  };
+
   return editor;
 };
+
+export default withChecklists;

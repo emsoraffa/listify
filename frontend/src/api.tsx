@@ -4,7 +4,9 @@ import { CheckListItemDto, DashboardListDto, ListDto } from "./dto";
 
 const SERVER_IP = null;
 const SERVER_PORT = null;
-const API_URL = `http://${SERVER_IP || "localhost"}:${SERVER_PORT || "8080"}/api`;
+//const API_URL = `http://${SERVER_IP || "localhost"}:${SERVER_PORT || "8080"}/api`;
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+console.log(API_URL)
 
 interface ListItem {
   name: string;
