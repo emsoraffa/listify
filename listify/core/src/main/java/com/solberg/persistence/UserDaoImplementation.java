@@ -53,6 +53,7 @@ public class UserDaoImplementation implements UserDao {
   }
 
   public User fetchUserLists(User user) {
+    logger.debug("Fetching " + user + " lists.");
     user.setListifyLists(listDao.findListsByUserId(user.getId()));
     return user;
   }

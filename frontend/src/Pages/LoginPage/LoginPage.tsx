@@ -12,6 +12,7 @@ export function LoginPage({ isMobileTest }: LoginPageProps) {
   const baseUrl = process.env.REACT_APP_BASE_URL || 'http://localhost:8080';
 
   const googleLogin = () => {
+    console.log(baseUrl)
     window.location.href = `${baseUrl}/oauth2/authorization/google`;
   }
 

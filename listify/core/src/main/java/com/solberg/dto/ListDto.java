@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ListDto {
   @JsonProperty("id")
-  private long id;
+  private Long id;
 
   @JsonProperty("list_name")
   private String listName;

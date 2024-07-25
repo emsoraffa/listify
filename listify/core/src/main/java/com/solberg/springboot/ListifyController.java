@@ -42,7 +42,7 @@ public class ListifyController {
   @Autowired
   private ListDao listDao;
 
-  @GetMapping("/li/{id}")
+  @GetMapping("/list/{id}")
   public ResponseEntity<ListDto> getList(@PathVariable long id) {
     ListifyList list = listDao.findListById(id);
 
@@ -122,6 +122,7 @@ public class ListifyController {
     Map<String, Object> response = new HashMap<>();
     response.put("message", "Received " + list.getListItems().size() + " items");
     response.put("items", list.getListItems());
+    response.put("id", userList.getId());
 
     return ResponseEntity.ok(response);
   }
@@ -154,5 +155,24 @@ public class ListifyController {
     response.put("items", userListsDto);
 
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/user/details")
+  public ResponseEntity<Map<String, String>> getUserDetails(@AuthenticationPrincipal Jwt jwt) {
+    String email = jwt.getClaimAsString("email");
+
+    User user = userDao.findUserByEmail(email);
+
+    if (user == null) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    logger.debug("Fetching user details for: " + user);
+
+    Map<String, String> userDetails = new HashMap<>();
+    userDetails.put("name", user.getName());
+    userDetails.put("email", user.getEmail());
+
+    return ResponseEntity.ok(userDetails);
   }
 }

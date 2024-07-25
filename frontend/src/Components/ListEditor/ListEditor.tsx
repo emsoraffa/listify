@@ -3,6 +3,7 @@ import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
 import { BaseEditor, createEditor, Descendant, Editor, Element as SlateElement, Path, Point, Range as SlateRange, Transforms } from 'slate';
 import { withHistory, HistoryEditor } from 'slate-history';
 import { TextElement, TextElementProps } from '../TextElement';
+import { CheckListItemElement } from '../CheckListItemElement';
 
 interface ListEditorProps {
   listItems: Descendant[];
@@ -20,8 +21,14 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
     []
   );
 
-  const renderElement = useCallback((props: TextElementProps) => <TextElement {...props} />, []);
-
+  const renderElement = useCallback((props: any) => {
+    switch (props.element.type) {
+      case 'check-list-item':
+        return <CheckListItemElement {...props} />;
+      default:
+        return <p {...props.attributes}>{props.children}</p>;
+    }
+  }, []);
   useImperativeHandle(ref, () => ({
     focus: () => {
       ReactEditor.focus(editor);
@@ -34,12 +41,21 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
     //debouncedSave();
   };
 
+  const initialValue = listItems.length === 0 ? [
+    {
+      type: 'check-list-item',
+      id: null,
+      checked: false,
+      children: [{ text: 'Add your items here...' }],
+    }
+  ] : listItems;
+
 
   return (
     <Slate editor={editor} initialValue={listItems} onChange={onChange}>
       <Editable
         renderElement={renderElement}
-        placeholder="Get to work…"
+        placeholder="      Add your items here.."
         spellCheck
         autoFocus
       />

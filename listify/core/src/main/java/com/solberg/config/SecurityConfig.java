@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Configuration
-@Profile("!dev")
 public class SecurityConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -128,7 +127,7 @@ public class SecurityConfig {
         try {
           OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
           OAuth2User oauthUser = oauthToken.getPrincipal();
-
+          // TODO: fix hardcoded URL
           String redirectUrl = "http://localhost:3000/oauth2/redirect";
 
           if (oauthUser instanceof OidcUser) {

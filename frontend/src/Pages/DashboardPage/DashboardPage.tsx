@@ -1,38 +1,37 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import './styles.css';
 import { useMediaQuery } from 'react-responsive';
-import { DashboardListDto, ListDto } from '../../dto';
+import { DashboardListDto } from '../../dto';
 import { fetchUserLists } from '../../api';
-import { AuthContext } from '../../context/AuthContext';
 import { ListCard } from '../../Components';
-
-
+import { useAuth } from '../../context/AuthContext/AuthContext';
 
 export function DashboardPage() {
-  //TODO: handle empty dashboard
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ query: '(max-width:1224px)' });
   const [lists, setLists] = useState<DashboardListDto[]>([]); // State to store the fetched data
-  const authState = useContext(AuthContext);
+  const { token, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (authState?.token) {
-      fetchUserLists(authState.token)
+    if (isAuthenticated && token) {
+      fetchUserLists(token)
         .then(lists => {
-          setLists(lists)
-          console.log("Fetched lists: ")
-          console.log(lists)
+          setLists(lists);
+          console.log("Fetched lists: ", lists);
         })  // Store fetched data in state
         .catch((err) => console.log(err.message));
-
+    } else {
+      navigate("/login");
     }
-    else navigate("/login");
-  }, [authState?.token, navigate]);
+  }, [token, isAuthenticated, navigate]);
 
   const handleCardClick = (id: number) => {
-    navigate(`/li/${id}`)
+    navigate(`/list/${id}`);
+  }
+  const handleNewListClick = () => {
+    navigate(`/list/new`);
   }
 
   return (
@@ -49,6 +48,11 @@ export function DashboardPage() {
         ))
       ) : (
         <div className="empty-dashboard-text">So empty...</div>
-      )}    </div>
+      )}
+      <Button variant="contained" color="primary" onClick={handleNewListClick}>
+        Create New List
+      </Button>
+    </div>
   );
 }
+

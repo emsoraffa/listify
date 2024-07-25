@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+
+import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -12,7 +13,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authState, setAuthState] = useState<{ isAuthenticated: boolean; token: string | null }>({
     isAuthenticated: false, token: null,
-  }); useEffect(() => {
+  });
+
+  useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       setAuthState({ isAuthenticated: true, token });
@@ -36,4 +39,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export { AuthContext, AuthProvider };
+const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export { AuthProvider, useAuth };
+

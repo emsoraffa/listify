@@ -3,6 +3,7 @@ package com.solberg.dev;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 
 @Component
+@Profile("mobile-dev")
 public class MockJwtFilter extends GenericFilterBean {
 
   @Override

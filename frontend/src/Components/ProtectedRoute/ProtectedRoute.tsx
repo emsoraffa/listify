@@ -1,15 +1,20 @@
-import { ReactNode, useContext } from "react";
+
+import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext/AuthContext";
 
 interface ProtectedRouteProps {
   element: ReactNode;
 }
+
 export const ProtectedRoute = ({ element }: ProtectedRouteProps) => {
-  const isAuthenticated = useContext(AuthContext);
+  const { isAuthenticated } = useAuth(); // Destructure to get isAuthenticated from useAuth hook
+
   if (!isAuthenticated) {
-    // user is not authenticated
+    // User is not authenticated
     return <Navigate to="/login" />;
   }
+
   return <>{element}</>;
 };
+
