@@ -34,9 +34,11 @@ public class ListifyList {
     System.out.println("Hello World!");
   }
 
-  public void addListItems(ListItem... ListItem) {
-    for (ListItem listItem : listItems) {
-      listItems.add(listItem);
+
+
+  public void addListItems(ListItem... newItems) {
+    for (ListItem listItem : newItems) {
+      this.listItems.add(listItem);
     }
   }
 

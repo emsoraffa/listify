@@ -1,28 +1,37 @@
 package com.solberg.models;
 
 public class ListItem {
-  private Long id;
-  private String name;
-  private Boolean state; // Defaults to false.
+  Long id;
+  String name;
+  boolean state;
+  int position;
+
+  public ListItem() {
+  }
 
   public ListItem(String name) {
     this.name = name;
-    this.state = false;
   }
 
-  public ListItem(String name, Boolean state) {
+  public ListItem(String name, boolean state) {
     this.name = name;
     this.state = state;
   }
 
-  public ListItem(String name, Boolean state, Long id) {
-    this.name = name;
-    this.state = state;
+  public ListItem(Long id, String name, boolean state, int position) {
     this.id = id;
+    this.name = name;
+    this.state = state;
+    this.position = position;
   }
 
-  public ListItem() {
+  // Getters and setters
+  public Long getId() {
+    return id;
+  }
 
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getName() {
@@ -33,20 +42,20 @@ public class ListItem {
     this.name = name;
   }
 
-  public Boolean getState() {
+  public boolean isState() {
     return state;
   }
 
-  public void setState(Boolean state) {
+  public void setState(boolean state) {
     this.state = state;
   }
 
-  public Long getId() {
-    return id;
+  public int getPosition() {
+    return position;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
   @Override
@@ -55,6 +64,7 @@ public class ListItem {
         "id=" + id +
         ", name='" + name + '\'' +
         ", state=" + state +
+        ", position=" + position +
         '}';
   }
 }

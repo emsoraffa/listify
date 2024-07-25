@@ -32,60 +32,60 @@ public class ListDaoImplementation implements ListDao {
   }
 
   public void saveList(ListifyList list) {
+    logger.debug("Attempting to save\n" + list.getListItems() + "\nto Database.");
+
+    // Update existing list or insert a new one and fetch ID
     if (list.getId() != null && listExists(list.getId())) {
-      // Update existing list
       String updateQuery = "UPDATE listify_lists SET list_name = :list_name WHERE id = :id";
       SqlParameterSource updateParameters = new MapSqlParameterSource()
           .addValue("list_name", list.getName())
           .addValue("id", list.getId());
       jdbcTemplate.update(updateQuery, updateParameters);
+      logger.debug("Existing list updated.");
     } else {
-      // Insert new list and fetch ID
       String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcTemplate.update(insertQuery, new MapSqlParameterSource()
           .addValue("list_name", list.getName())
           .addValue("user_id", list.getUser().getId()), keyHolder, new String[] { "ID" });
       list.setId(keyHolder.getKey().longValue());
+      logger.debug("New list inserted to Database with id:" + list.getId());
     }
 
     // Handle list items
-    list.getListItems().forEach(item -> {
-      if (item.getId() == null || !listItemExists(item.getId())) {
-        // Insert new list item
-        String insertItemQuery = "INSERT INTO list_items (name, state, listify_list_id) VALUES (:name, :state, :list_id)";
+    int position = 0;
+    for (ListItem item : list.getListItems()) {
+      if (item.getId() == null) {
+        // Insert new list item and fetch ID
+        String insertItemQuery = "INSERT INTO list_items (name, state, listify_list_id, position) VALUES (:name, :state, :list_id, :position)";
+        KeyHolder itemKeyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertItemQuery, new MapSqlParameterSource()
             .addValue("name", item.getName())
-            .addValue("state", item.getState())
-            .addValue("list_id", list.getId()));
+            .addValue("state", item.isState())
+            .addValue("list_id", list.getId())
+            .addValue("position", position), itemKeyHolder, new String[] { "ID" });
+        item.setId(Objects.requireNonNull(itemKeyHolder.getKey()).longValue());
+        logger.debug("Inserted new listitem record: " + item);
       } else {
         // Update existing list item
-        String updateItemQuery = "UPDATE list_items SET name = :name, state = :state WHERE id = :id";
+        String updateItemQuery = "UPDATE list_items SET name = :name, state = :state, position = :position WHERE id = :id";
         jdbcTemplate.update(updateItemQuery, new MapSqlParameterSource()
             .addValue("name", item.getName())
-            .addValue("state", item.getState())
+            .addValue("state", item.isState())
+            .addValue("position", position)
             .addValue("id", item.getId()));
+        logger.debug("Updated existing listitem record: " + item);
       }
-    });
-
-    // Delete items no longer in the list only if itemIds is not empty
-    List<Long> itemIds = list.getListItems().stream()
-        .map(ListItem::getId)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
-
-    if (!itemIds.isEmpty()) {
-      String deleteQuery = "DELETE FROM list_items WHERE listify_list_id = :list_id AND id NOT IN (:item_ids)";
-      jdbcTemplate.update(deleteQuery, new MapSqlParameterSource()
-          .addValue("list_id", list.getId())
-          .addValue("item_ids", itemIds));
+      position++;
     }
+
+    logger.debug("Saved list " + list.toString() + " to database.");
   }
 
-  private boolean listItemExists(Long id) {
+  private boolean listItemExists(Long itemId) {
     String query = "SELECT COUNT(*) FROM list_items WHERE id = :id";
-    SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
-    Integer count = jdbcTemplate.queryForObject(query, namedParameters, Integer.class);
+    SqlParameterSource parameters = new MapSqlParameterSource().addValue("id", itemId);
+    Integer count = jdbcTemplate.queryForObject(query, parameters, Integer.class);
     return count != null && count > 0;
   }
 
@@ -106,17 +106,22 @@ public class ListDaoImplementation implements ListDao {
     try {
       ListifyList list = jdbcTemplate.queryForObject(listQuery, namedParameters, new ListifyListRowMapper());
       if (list != null) {
-        String listItemQuery = "SELECT id AS list_item_id, name AS list_item_name, state AS list_item_state " +
-            "FROM list_items " +
-            "WHERE listify_list_id = :list_id";
-        SqlParameterSource itemParameters = new MapSqlParameterSource().addValue("list_id", id);
-        List<ListItem> items = jdbcTemplate.query(listItemQuery, itemParameters, new ListItemRowMapper());
+        List<ListItem> items = getListItems(id);
         list.setListItems(items);
       }
       return list;
     } catch (EmptyResultDataAccessException e) {
       return null;
     }
+  }
+
+  public List<ListItem> getListItems(long listId) {
+    String listItemQuery = "SELECT id AS list_item_id, name AS list_item_name, state AS list_item_state, position " +
+        "FROM list_items " +
+        "WHERE listify_list_id = :list_id " +
+        "ORDER BY position";
+    SqlParameterSource itemParameters = new MapSqlParameterSource().addValue("list_id", listId);
+    return jdbcTemplate.query(listItemQuery, itemParameters, new ListItemRowMapper());
   }
 
   public List<ListifyList> findListsByUserId(Long userId) {

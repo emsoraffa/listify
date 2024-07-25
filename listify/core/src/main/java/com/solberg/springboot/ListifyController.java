@@ -42,11 +42,6 @@ public class ListifyController {
   @Autowired
   private ListDao listDao;
 
-  @GetMapping("/test")
-  public ListItem testList() {
-    return new ListItem("test");
-  }
-
   @GetMapping("/li/{id}")
   public ResponseEntity<ListDto> getList(@PathVariable long id) {
     ListifyList list = listDao.findListById(id);
@@ -69,7 +64,7 @@ public class ListifyController {
         .map(item -> new CheckListItemDto(
             item.getId(),
             item.getName() != null ? item.getName() : "", // Handle null or provide a default value
-            item.getState()))
+            item.isState()))
         .collect(Collectors.toList()));
     return listDto;
   }
@@ -90,13 +85,13 @@ public class ListifyController {
 
     if (list.getId() != null) {
       userList = listDao.findListById(list.getId());
-      logger.debug(userList.toString());
+      logger.debug("Result from database query: " + userList.toString());
       if (userList == null || !userList.getUser().getId().equals(user.getId())) {
         logger.debug("list not found or access denied");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "List not found or access denied"));
       }
       userList.setName(list.getListName());
-      userList.getListItems().clear(); // Clear existing items
+      userList.getListItems().clear();
       logger.debug("Overwriting list...");
 
     } else {
@@ -145,7 +140,7 @@ public class ListifyController {
     for (ListifyList list : user.getListifyLists()) {
       List<CheckListItemDto> itemDtos = new ArrayList<>();
       for (ListItem item : list.getListItems()) {
-        itemDtos.add(new CheckListItemDto(item.getId(), item.getName(), item.getState()));
+        itemDtos.add(new CheckListItemDto(item.getId(), item.getName(), item.isState()));
       }
       userListsDto.add(new DashboardListDto(list.getId(), list.getName(), user.getName(), itemDtos));
     }
