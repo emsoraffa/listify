@@ -90,8 +90,8 @@ export function ListPage() {
       postList({ id: listId, list_name, list_items }, token)
         .then(response => {
           console.log('Data posted successfully:', response);
-          if (id === 'new' && response.data.id) {
-            navigate(`/list/${response.data.id}`); // Navigate to the new list's page after creation
+          if (id === 'new' && response.id) {
+            navigate(`/list/${response.id}`); // Navigate to the new list's page after creation
           }
         })
         .catch(error => console.error('Error posting data:', error));
