@@ -35,7 +35,7 @@ public class ListDaoImplementation implements ListDao {
     logger.debug("Attempting to save\n" + list.getListItems() + "\nto Database.");
 
     // Update existing list or insert a new one and fetch ID
-    if (list.getId() != null && listExists(list.getId())) {
+    if (list.getId() != null) {
       String updateQuery = "UPDATE listify_lists SET list_name = :list_name WHERE id = :id";
       SqlParameterSource updateParameters = new MapSqlParameterSource()
           .addValue("list_name", list.getName())

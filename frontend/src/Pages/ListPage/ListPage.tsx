@@ -19,14 +19,17 @@ export function ListPage() {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const { token, isAuthenticated } = useAuth();
   const { user } = useUser();
+
   const [costs, setCosts] = useState<string>();
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const [title, setTitle] = useState<Descendant[]>([
     { type: 'title', children: [{ text: 'Loading...' }] }
   ]);
+
   const [listItems, setListItems] = useState<Descendant[]>([{
     type: 'check-list-item',
     checked: false,
@@ -36,7 +39,14 @@ export function ListPage() {
   const [titleEditorKey, setTitleEditorKey] = useState(0);
   const [listEditorKey, setListEditorKey] = useState(1);
 
-
+  const parseCost = (response: string): string => {
+    const match = response.match(/^sum:\s*(\d+(\.\d+)?)$/i);
+    if (match) {
+      return `NOK ${match[1]}`;
+    } else {
+      return 'There was an error estimating your costs. TIP: try being as specific as possible';
+    }
+  };
 
   const handleEstimate = async () => {
     setLoading(true);
@@ -49,10 +59,10 @@ export function ListPage() {
     try {
       const estimatedCost = await estimateCosts(itemNames);
       console.log('Estimated cost:', estimatedCost);
+      const formattedEstimatedCost = parseCost(estimatedCost)
       setLoading(false);
 
-      setCosts(estimatedCost);
-      // You might want to display the estimated cost to the user here
+      setCosts(formattedEstimatedCost);
     } catch (error) {
       console.error('Error estimating costs:', error);
       setLoading(false);

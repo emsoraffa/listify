@@ -39,7 +39,7 @@ export function MobileDrawer() {
         </ListItem>
         <ListItem button onClick={() => navigate('/profile')}>
           <ListItemIcon><AccountCircle /></ListItemIcon>
-          <ListItemText primary="Profile" />
+          <ListItemText />
           {user && <div>{user.name}</div>}
         </ListItem>
         <ListItem button onClick={() => {
