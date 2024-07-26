@@ -20,7 +20,9 @@ export function LoginPage({ isMobileTest }: LoginPageProps) {
   const handleBypassLogin = async () => {
     try {
       console.log(baseUrl)
-      const response = await fetch(`${baseUrl}/dev/login`);
+      const response = await fetch(`http://10.0.0.249:8080/dev/login`, {
+        method: "GET",
+      });
       const data = await response.json();
       localStorage.setItem('accessToken', data.token);
       navigate('/dashboard');

@@ -1,6 +1,7 @@
 .content-container {
   height: 55rem;
   width: 80%;
+  margin-right: 64px;
 }
 
 .empty-dashboard-text {

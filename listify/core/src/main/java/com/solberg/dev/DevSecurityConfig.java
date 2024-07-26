@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.annotation.PostConstruct;
+
 @Configuration
 @Profile("mobile-dev") // Apply this configuration only when 'dev' profile is active
 // TODO: rename dev mode to somethign more intuitive
@@ -26,6 +30,13 @@ public class DevSecurityConfig {
 
   @Autowired
   private MockJwtFilter mockJwtFilter;
+
+  private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfig.class);
+
+  @PostConstruct
+  public void init() {
+    logger.debug("SecurityConfig initialized (mobile-dev mode");
+  }
 
   @Bean
   public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {

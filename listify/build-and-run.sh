@@ -17,13 +17,14 @@ cd core
 
 # Ask the user if they want to run in development mode
 echo "Do you want to run in mobile development mode? (yes/no)"
-read dev_mode
+read mobile_dev_mode
 
 # Check user input and set the Spring profile accordingly
-if [ "$dev_mode" == "yes" ]; then
-  echo "Starting the application in mobile development modmobile-dev..."
+if [ "$mobile_dev_mode" == "yes" ]; then
+  echo "Starting the application in mode mobile-dev..."
   mvn spring-boot:run -Dspring-boot.run.profiles=mobile-dev
 else
   echo "Starting the application in default mode..."
-  mvn spring-boot:run
+  mvn spring-boot:run -Dspring-boot.run.profiles=dev
+
 fi

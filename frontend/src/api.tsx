@@ -2,7 +2,7 @@ import { CheckListItemDto, DashboardListDto, ListDto, UserDto } from "./dto";
 
 const SERVER_IP = null;
 const SERVER_PORT = null;
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://10.0.0.249:8080/api';
 console.log(API_URL)
 
 interface ListItem {
@@ -21,6 +21,7 @@ export const getListItems = async (): Promise<any> => {
 };
 
 export const postList = async (list: ListDto, token: string) => {
+  console.log(API_URL)
   console.log("Token:", token);
   console.log("Items to be sent:", list);
   console.log("Serialized Items:", JSON.stringify(list));

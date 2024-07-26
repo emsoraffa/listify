@@ -103,7 +103,7 @@ export function ListPage() {
             type: 'check-list-item',
             id: item.id,
             checked: item.checked,
-            children: [{ text: item.text || '' }]
+            children: [{ text: item.text || '', fontSize: "24px" }]
           })));
           setTitleEditorKey(prevKey => prevKey + 1);
           setListEditorKey(prevKey => prevKey + 1);
@@ -113,12 +113,12 @@ export function ListPage() {
           console.error('Failed to fetch list:', error);
         });
     } else if (id === 'new') {
-      setTitle([{ type: 'title', children: [{ text: 'New List' }] }]);
+      setTitle([{ type: 'title', children: [{ text: 'New List', fontSize: "32px" }] }]);
       setListItems([{
         type: 'check-list-item',
         checked: false,
         id: null,
-        children: [{ text: '' }],
+        children: [{ text: '', fontSize: "24px" }],
       }]);
       setTitleEditorKey(prevKey => prevKey + 1);
       setListEditorKey(prevKey => prevKey + 1);

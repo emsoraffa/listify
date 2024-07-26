@@ -4,6 +4,7 @@ import { BaseEditor, createEditor, Descendant, Editor, Element as SlateElement, 
 import { withHistory, HistoryEditor } from 'slate-history';
 import { TextElement, TextElementProps } from '../TextElement';
 import { CheckListItemElement } from '../CheckListItemElement';
+import { Leaf } from '../Leaf/Leaf';
 
 interface ListEditorProps {
   listItems: Descendant[];
@@ -29,6 +30,9 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
         return <p {...props.attributes}>{props.children}</p>;
     }
   }, []);
+
+  const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
+
   useImperativeHandle(ref, () => ({
     focus: () => {
       ReactEditor.focus(editor);
@@ -46,7 +50,7 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
       type: 'check-list-item',
       id: null,
       checked: false,
-      children: [{ text: 'Add your items here...' }],
+      children: [{ text: 'Add your items here...', fontSize: '24px' }],
     }
   ] : listItems;
 
@@ -55,6 +59,7 @@ export const ListEditor = forwardRef<ListEditorRef, ListEditorProps>(({ listItem
     <Slate editor={editor} initialValue={listItems} onChange={onChange}>
       <Editable
         renderElement={renderElement}
+        renderLeaf={renderLeaf}
         placeholder="      Add your items here.."
         spellCheck
         autoFocus
@@ -116,7 +121,7 @@ const withChecklists = (editor: BaseEditor & ReactEditor & HistoryEditor) => {
             type: 'check-list-item',
             id: null,
             checked: false,
-            children: [{ text: '' }],
+            children: [{ text: '', fontSize: "24px" }],
           };
           Transforms.insertNodes(editor, newChecklistItem, { at: Path.next(path) });
           // Move the cursor to the start of the new checklist item

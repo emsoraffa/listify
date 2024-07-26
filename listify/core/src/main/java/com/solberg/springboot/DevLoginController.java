@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Profile("dev")
+@Profile("mobile-dev")
 @RequestMapping("/dev")
 public class DevLoginController {
 

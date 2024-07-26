@@ -1,7 +1,8 @@
 
-import React, { useMemo, useImperativeHandle, forwardRef } from 'react';
+import React, { useMemo, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
 import { createEditor, Descendant } from 'slate';
+import { Leaf } from '../Leaf/Leaf';
 
 interface TitleEditorProps {
   title: Descendant[];
@@ -23,6 +24,7 @@ export const TitleEditor = forwardRef<TitleEditorRef, TitleEditorProps>(
       }
     }));
 
+
     const handleKeyDown = (event: React.KeyboardEvent) => {
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -39,7 +41,7 @@ export const TitleEditor = forwardRef<TitleEditorRef, TitleEditorProps>(
         <Editable
           onKeyDown={handleKeyDown}
           placeholder="Enter list title here"
-          style={{ fontWeight: 'bold', fontSize: '24px', margin: '10px 0' }}
+          style={{ fontWeight: 'bold', fontSize: "32px", margin: '10px 0' }}
         />
       </Slate>
     );
