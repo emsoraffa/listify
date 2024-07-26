@@ -1,4 +1,3 @@
-
 import { Button } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchListById, postList } from "../../api";
@@ -12,6 +11,7 @@ import { CheckListItemDto } from "../../dto";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext/UserContext";
 import { useAuth } from "../../context/AuthContext/AuthContext";
+import { estimateCosts } from "../../AIapi";
 
 export function ListPage() {
   const titleEditorRef = useRef<any>(null);
@@ -21,6 +21,7 @@ export function ListPage() {
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
   const { user } = useUser();
+  const [costs, setCosts] = useState<string>();
 
   const [title, setTitle] = useState<Descendant[]>([
     { type: 'title', children: [{ text: 'Loading...' }] }
@@ -34,7 +35,25 @@ export function ListPage() {
   const [titleEditorKey, setTitleEditorKey] = useState(0);
   const [listEditorKey, setListEditorKey] = useState(1);
 
-  const handleSave = useCallback(() => {
+
+
+  const handleEstimate = async () => {
+    const itemNames = listItems
+      .filter(isElement)
+      .filter(isCheckListItemElement)
+      .map(item => item.children[0].text)
+      .join(', '); // Create a comma-separated string of item names
+
+    try {
+      const estimatedCost = await estimateCosts(itemNames);
+      console.log('Estimated cost:', estimatedCost);
+
+      setCosts(estimatedCost);
+      // You might want to display the estimated cost to the user here
+    } catch (error) {
+      console.error('Error estimating costs:', error);
+    }
+  }; const handleSave = useCallback(() => {
     const titleElement = title.find(isElement);
     const list_name = titleElement ? titleElement.children[0].text.trim() : "";
 
@@ -58,7 +77,7 @@ export function ListPage() {
         .then(response => {
           console.log('Data posted successfully:', response);
           if (id === 'new' && response.data.id) {
-            navigate(`/li/${response.data.id}`); // Navigate to the new list's page after creation
+            navigate(`/list/${response.data.id}`); // Navigate to the new list's page after creation
           }
         })
         .catch(error => console.error('Error posting data:', error));
@@ -115,6 +134,9 @@ export function ListPage() {
         debouncedSave={debouncedSave}
         key={listEditorKey} />
       <Button onClick={handleSave}>Save</Button>
+
+      <Button onClick={handleEstimate}>Estimate costs</Button>
+      {costs && <div>{costs}</div>}
     </div>
   );
 }
