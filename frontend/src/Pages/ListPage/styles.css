@@ -5,3 +5,8 @@
   justify-items: left;
   padding-left: 2rem;
 }
+
+.output-container {
+  justify-content: center;
+  display: flex;
+}

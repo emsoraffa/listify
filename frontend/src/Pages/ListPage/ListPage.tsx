@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchListById, postList } from "../../api";
 import { ListEditor } from "../../Components/ListEditor";
@@ -22,6 +22,7 @@ export function ListPage() {
   const { token, isAuthenticated } = useAuth();
   const { user } = useUser();
   const [costs, setCosts] = useState<string>();
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const [title, setTitle] = useState<Descendant[]>([
     { type: 'title', children: [{ text: 'Loading...' }] }
@@ -38,6 +39,7 @@ export function ListPage() {
 
 
   const handleEstimate = async () => {
+    setLoading(true);
     const itemNames = listItems
       .filter(isElement)
       .filter(isCheckListItemElement)
@@ -47,11 +49,13 @@ export function ListPage() {
     try {
       const estimatedCost = await estimateCosts(itemNames);
       console.log('Estimated cost:', estimatedCost);
+      setLoading(false);
 
       setCosts(estimatedCost);
       // You might want to display the estimated cost to the user here
     } catch (error) {
       console.error('Error estimating costs:', error);
+      setLoading(false);
     }
   }; const handleSave = useCallback(() => {
     const titleElement = title.find(isElement);
@@ -136,7 +140,13 @@ export function ListPage() {
       <Button onClick={handleSave}>Save</Button>
 
       <Button onClick={handleEstimate}>Estimate costs</Button>
-      {costs && <div>{costs}</div>}
+      <div className="output-container">
+        {!isLoading && costs &&
+          <div>{costs}</div>}
+        {isLoading &&
+          <CircularProgress />}
+
+      </div>
     </div>
   );
 }
