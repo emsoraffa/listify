@@ -18,29 +18,28 @@ export function Sidebar() {
   };
 
   return (
-    <div className="large-sidebar-container">
+    <div className="sidebar-container">
       <div className="top-section">
-        <div className="large-sidebar-item" style={{ marginBottom: '0' }}>
+        <div className="sidebar-item" style={{ marginBottom: '0' }}>
           <ReceiptLong fontSize='large' className="icon" />
           <h2 className="sidebar-link">Listify</h2>
         </div>
         <hr className="custom-hr" />
-        <div className="large-sidebar-item">
+        <div className="sidebar-item">
           <AccountCircle className="icon" />
           <div className="sidebar-link">
-            Profile
             {user && <div>{user.name}</div>}
           </div>
         </div>
-        <div className="large-sidebar-item">
+        <div className="sidebar-item">
           <Dashboard className="icon" />
           <div className="sidebar-link">Dashboard</div>
         </div>
-        <div className="large-sidebar-item">
+        <div className="sidebar-item">
           <Category className="icon" />
           <div className="sidebar-link">Categories</div>
         </div>
-        <div className="large-sidebar-item">
+        <div className="sidebar-item">
           <Settings className="icon" />
           <div className="sidebar-link">Settings</div>
         </div>

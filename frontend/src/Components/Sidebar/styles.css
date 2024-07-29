@@ -1,21 +1,13 @@
 .sidebar-container {
   display: flex;
   flex-direction: column;
-  width: 5rem;
-  height: 100%;
-  background-color: #f4f4f4;
-  align-items: center;
-
-}
-
-.large-sidebar-container {
-  display: flex;
-  flex-direction: column;
-  width: 20rem;
+  width: 16rem;
   height: 100%;
   background-color: #f4f4f4;
   justify-content: left;
 }
+
+
 
 .sidebar-item {
   display: flex;
@@ -23,15 +15,7 @@
   margin-top: 1rem;
   margin-bottom: 2rem;
   align-items: center;
-}
-
-.large-sidebar-item {
-  display: flex;
-  flex-direction: row;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
-  margin-left: 6.5rem;
-  align-items: center;
+  justify-content: center;
 }
 
 .custom-hr {
