@@ -1,3 +1,4 @@
+export { NavbarDrawer } from "./NavbarDrawer";
 export { Navbar } from "./Navbar";
 export { CallToActionButton } from "./CallToActionButton";
 export { OAuth2RedirectHandler } from "./OAuth2RedirectHandler";

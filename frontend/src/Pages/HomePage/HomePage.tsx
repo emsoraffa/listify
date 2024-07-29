@@ -13,17 +13,24 @@ export function HomePage() {
   };
 
   return (
-    <div className="content-container">
-      <h1 className={isMobile ? "small-landing-header" : "big-landing-header"}>Grocery shopping made simple</h1>
-      <p>Effortlessly create and share shopping lists with the entire family.
-        Haven't decided what to eat? Let Listify make suggestions for you!</p>
+    <div className={isMobile ? "mobile-content-container" : "content-container"}>
+      <h1 className={isMobile ? "small-landing-header" : "big-landing-header"}>Simplify your shopping and spending habits!</h1>
+      <p className={isMobile ? "small-description" : "description"}>
+        With the click of a button, create and share shopping lists with the entire family.
+        Use the power of artificial intelligence to plan your shopping and track your spending!</p>
       <div className={isMobile ? "btn-col" : "btn-row"}>
-        <Button variant="contained" color="secondary" onClick={handleSignUp}>
-          Sign me up!
-        </Button>
-        <Button variant="outlined" color="primary">
-          Quickstart
-        </Button>
+        <div className="signup-btn">
+          <Button variant="contained" color="secondary" onClick={handleSignUp}>
+            Signup for free
+          </Button>
+        </div>
+        <div className="tutorial-btn">
+          <Button variant="outlined" color="primary">
+            Watch video
+          </Button>
+
+        </div>
+
       </div>
     </div>
   );

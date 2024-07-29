@@ -36,6 +36,9 @@ export function LoginPage({ isMobileTest }: LoginPageProps) {
         <Button onClick={googleLogin} variant="contained" color="primary">
           Login with Google
         </Button>
+        <Button variant="text" color="primary">
+          Sign up with email
+        </Button>
         {isMobileTest && (
           <Button onClick={handleBypassLogin} variant="contained" color="secondary" style={{ marginTop: '20px' }}>
             Bypass Login (Mobile test Only)

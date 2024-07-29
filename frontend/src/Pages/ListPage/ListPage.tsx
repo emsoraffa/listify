@@ -42,14 +42,13 @@ export function ListPage() {
   const [listEditorKey, setListEditorKey] = useState(1);
 
   const parseCost = (response: string): string => {
-    const match = response.match(/^sum:\s*(\d+(\.\d+)?)$/i);
+    const match = response.match(/^estimated costs:\s*(\d+(\.\d+)?)\s*kr$/i);
     if (match) {
-      return `NOK ${match[1]}`;
+      return `Estimated cost: ${match[1]} kr`;
     } else {
       return 'There was an error estimating your costs. TIP: try being as specific as possible';
     }
   };
-
   const handleEstimate = async () => {
     setLoading(true);
     const itemNames = listItems
