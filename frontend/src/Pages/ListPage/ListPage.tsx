@@ -12,6 +12,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext/UserContext";
 import { useAuth } from "../../context/AuthContext/AuthContext";
 import { estimateCosts } from "../../AIapi";
+import { useMediaQuery } from "react-responsive";
 
 export function ListPage() {
   const titleEditorRef = useRef<any>(null);
@@ -19,6 +20,7 @@ export function ListPage() {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery({ query: '(max-width:1224px)' });
 
   const { token, isAuthenticated } = useAuth();
   const { user } = useUser();
@@ -136,17 +138,21 @@ export function ListPage() {
   }, [id, token]);
 
   return (
-    <div className="container">
-      <TitleEditor title={title}
-        ref={titleEditorRef}
-        onFocusNext={() => listEditorRef.current?.focus()}
-        setTitle={setTitle}
-        key={titleEditorKey} />
-      <ListEditor listItems={listItems}
-        ref={listEditorRef}
-        setListItems={setListItems}
-        debouncedSave={debouncedSave}
-        key={listEditorKey} />
+    <div className={isMobile ? "container" : "large-container"}>
+      <div className="title-container">
+        <TitleEditor title={title}
+          ref={titleEditorRef}
+          onFocusNext={() => listEditorRef.current?.focus()}
+          setTitle={setTitle}
+          key={titleEditorKey} />
+      </div>
+      <div className="editor-container">
+        <ListEditor listItems={listItems}
+          ref={listEditorRef}
+          setListItems={setListItems}
+          debouncedSave={debouncedSave}
+          key={listEditorKey} />
+      </div>
       <Button onClick={handleSave}>Save</Button>
 
       <Button onClick={handleEstimate}>Estimate costs</Button>
@@ -157,7 +163,7 @@ export function ListPage() {
           <CircularProgress />}
 
       </div>
-    </div>
+    </div >
   );
 }
 
