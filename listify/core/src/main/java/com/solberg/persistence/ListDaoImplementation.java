@@ -43,29 +43,37 @@ public class ListDaoImplementation implements ListDao {
       jdbcTemplate.update(updateQuery, updateParameters);
       logger.debug("Existing list updated.");
     } else {
-      String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id)";
-      KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcTemplate.update(insertQuery, new MapSqlParameterSource()
+      // New list, insert it and retrieve the generated ID
+      String insertQuery = "INSERT INTO listify_lists (list_name, user_id) VALUES (:list_name, :user_id) RETURNING id";
+      SqlParameterSource insertParameters = new MapSqlParameterSource()
           .addValue("list_name", list.getName())
-          .addValue("user_id", list.getUser().getId()), keyHolder, new String[] { "ID" });
-      list.setId(keyHolder.getKey().longValue());
-      logger.debug("New list inserted to Database with id:" + list.getId());
-    }
+          .addValue("user_id", list.getUser().getId());
 
+      // Execute the insert operation and retrieve the key
+      Number key = jdbcTemplate.queryForObject(insertQuery, insertParameters, Long.class);
+      if (key != null) {
+        list.setId(key.longValue());
+        logger.debug("New list inserted to Database with id: {}", list.getId());
+      }
+    }
     // Handle list items
     int position = 0;
     for (ListItem item : list.getListItems()) {
       if (item.getId() == null) {
         // Insert new list item and fetch ID
-        String insertItemQuery = "INSERT INTO list_items (name, state, listify_list_id, position) VALUES (:name, :state, :list_id, :position)";
-        KeyHolder itemKeyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(insertItemQuery, new MapSqlParameterSource()
+        // Insert new list item and fetch ID using RETURNING clause
+        String insertItemQuery = "INSERT INTO list_items (name, state, listify_list_id, position) VALUES (:name, :state, :list_id, :position) RETURNING id";
+        SqlParameterSource itemParameters = new MapSqlParameterSource()
             .addValue("name", item.getName())
             .addValue("state", item.isState())
             .addValue("list_id", list.getId())
-            .addValue("position", position), itemKeyHolder, new String[] { "ID" });
-        item.setId(Objects.requireNonNull(itemKeyHolder.getKey()).longValue());
-        logger.debug("Inserted new listitem record: " + item);
+            .addValue("position", position);
+
+        Number itemKey = jdbcTemplate.queryForObject(insertItemQuery, itemParameters, Long.class);
+        if (itemKey != null) {
+          item.setId(itemKey.longValue());
+          logger.debug("Inserted new list item with id: {}", item.getId());
+        }
       } else {
         // Update existing list item
         String updateItemQuery = "UPDATE list_items SET name = :name, state = :state, position = :position WHERE id = :id";

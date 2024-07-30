@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import com.solberg.models.User;
 
 public class UserDaoImplementation implements UserDao {
+  // TODO: index email column for performance.
   private final NamedParameterJdbcTemplate jdbcTemplate;
 
   private static final Logger logger = LoggerFactory.getLogger(UserDaoImplementation.class);
