@@ -1,4 +1,4 @@
-.navbar-container {
+.navbarContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -7,13 +7,13 @@
   padding-right: 4.3rem;
 }
 
-.right-partition {
+.rightPartition {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.left-partition {
+.leftPartition {
   display: flex;
   flex-direction: row;
   align-items: center;

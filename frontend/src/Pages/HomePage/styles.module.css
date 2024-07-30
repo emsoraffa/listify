@@ -1,14 +1,23 @@
-.content-container {
+.contentContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileContentContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.landingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 10rem;
-  margin-left: 10rem;
   width: 100%;
 }
 
-
-.mobile-content-container {
+.mobileLandingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,44 +31,56 @@
   text-align: center;
 }
 
-.small-description {
+.smallDescription {
   max-width: 80%;
   text-align: center;
 }
 
-.big-landing-header {
+.bigLandingHeader {
   max-width: 60%;
   text-align: center;
   font-weight: bold;
   font-size: 64px;
 }
 
-.small-landing-header {
+.smallLandingHeader {
   max-width: 75%;
   text-align: center;
   font-weight: bold;
 }
 
-.btn-row {
+.btnRow {
   display: flex;
 }
 
-.btn-col {
+.btnCol {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.signup-btn {
+.signupBtn {
   margin-bottom: 0.5rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-
 }
 
-.tutorial-btn {
+.tutorialBtn {
   margin-bottom: 0.5rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+}
+
+.showcaseContainer {
+  margin-top: 27rem;
+  background-color: #219ebc;
+  width: 100%;
+  height: 45rem;
+  display: flex;
+  justify-content: center;
+}
+
+.showcaseHeader {
+  color: white;
 }

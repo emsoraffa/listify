@@ -1,4 +1,4 @@
-.sidebar-container {
+.sidebarContainer {
   display: flex;
   flex-direction: column;
   width: 16rem;
@@ -7,9 +7,7 @@
   justify-content: left;
 }
 
-
-
-.sidebar-item {
+.sidebarItem {
   display: flex;
   flex-direction: row;
   margin-top: 1rem;
@@ -18,18 +16,18 @@
   justify-content: center;
 }
 
-.custom-hr {
+.customHr {
   border: none;
   height: 2px;
   background-color: #D0D0D0;
   width: 50%;
 }
 
-.sidebar-link {
+.sidebarLink {
   margin-left: 0.5rem;
 }
 
-.bottom-section {
+.bottomSection {
   margin-top: 25rem;
   display: flex;
   flex-direction: column;

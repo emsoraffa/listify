@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { IconButton, SwipeableDrawer, List, ListItem, ListItemText, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
-import "./styles.css";
+import styles from "./styles.module.css";
 import { CallToActionButton } from "../CallToActionButton/CallToActionButton";
 
 export function NavbarDrawer() {
@@ -34,7 +34,7 @@ export function NavbarDrawer() {
   );
 
   return (
-    <div className="navbardrawer-container">
+    <div className={styles.navbarDrawerContainer}>
       <Button variant="contained" color="secondary" style={{ borderRadius: 50, marginRight: '1.5rem' }}>
         Get Started
       </Button>
@@ -57,5 +57,4 @@ export function NavbarDrawer() {
     </div>
   );
 }
-
 

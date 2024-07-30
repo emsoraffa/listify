@@ -1,9 +1,9 @@
-.content-container {
+.contentContainer {
   height: 55rem;
   width: 80%;
   margin-right: 64px;
 }
 
-.empty-dashboard-text {
+.emptyDashboardText {
   color: #5b5b5b;
 }

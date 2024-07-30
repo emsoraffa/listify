@@ -1,10 +1,11 @@
 import { Button } from "@mui/material";
-import "./styles.css";
+
+import styles from "./styles.module.css";
 
 export function Navbar() {
   return (
-    <div className="navbar-container">
-      <div className="left-partition">
+    <div className={styles.navbarContainer}>
+      <div className={styles.leftPartition}>
         <Button variant="text" color="primary" style={{ borderRadius: 50, marginRight: '10px' }}>
           Listify
         </Button>
@@ -14,23 +15,16 @@ export function Navbar() {
         <Button variant="text" color="primary" style={{ borderRadius: 50, marginRight: '10px' }}>
           About
         </Button>
-
-
-
-
       </div>
-      <div className="right-partition">
+      <div className={styles.rightPartition}>
         <Button variant="text" color="primary" style={{ borderRadius: 50, marginRight: '10px' }}>
           Sign in
         </Button>
-
         <Button variant="contained" color="secondary" style={{ borderRadius: 50, marginRight: '10px' }}>
           Get Started
         </Button>
-
       </div>
-
     </div>
-
-  )
+  );
 }
+

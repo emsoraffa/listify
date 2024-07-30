@@ -1,6 +1,6 @@
 
 import { AccountCircle, Dashboard, Category, Settings, ReceiptLong } from '@mui/icons-material';
-import './styles.css';
+import styles from './styles.module.css';
 import { Button } from '@mui/material';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -18,34 +18,33 @@ export function Sidebar() {
   };
 
   return (
-    <div className="sidebar-container">
-      <div className="top-section">
-        <div className="sidebar-item" style={{ marginBottom: '0' }}>
-          <ReceiptLong fontSize='large' className="icon" />
-          <h2 className="sidebar-link">Listify</h2>
+    <div className={styles.sidebarContainer}>
+      <div className={styles.topSection}>
+        <div className={styles.sidebarItem} style={{ marginBottom: '0' }}>
+          <ReceiptLong fontSize="large" className={styles.icon} />
+          <h2 className={styles.sidebarLink}>Listify</h2>
         </div>
-        <hr className="custom-hr" />
-        <div className="sidebar-item">
-          <AccountCircle className="icon" />
-          <div className="sidebar-link">
+        <hr className={styles.customHr} />
+        <div className={styles.sidebarItem}>
+          <AccountCircle className={styles.icon} />
+          <div className={styles.sidebarLink}>
             {user && <div>{user.name}</div>}
           </div>
         </div>
-        <div className="sidebar-item">
-          <Dashboard className="icon" />
-          <div className="sidebar-link">Dashboard</div>
+        <div className={styles.sidebarItem}>
+          <Dashboard className={styles.icon} />
+          <div className={styles.sidebarLink}>Dashboard</div>
         </div>
-        <div className="sidebar-item">
-          <Category className="icon" />
-          <div className="sidebar-link">Categories</div>
+        <div className={styles.sidebarItem}>
+          <Category className={styles.icon} />
+          <div className={styles.sidebarLink}>Categories</div>
         </div>
-        <div className="sidebar-item">
-          <Settings className="icon" />
-          <div className="sidebar-link">Settings</div>
+        <div className={styles.sidebarItem}>
+          <Settings className={styles.icon} />
+          <div className={styles.sidebarLink}>Settings</div>
         </div>
       </div>
-
-      <div className="bottom-section">
+      <div className={styles.bottomSection}>
         <Button variant="outlined" onClick={handleLogout}>Log out</Button>
       </div>
     </div>

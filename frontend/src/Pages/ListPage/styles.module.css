@@ -1,4 +1,4 @@
-.large-container {
+.largeContainer {
   height: 100rem;
   display: flex;
   flex-direction: column;
@@ -17,11 +17,9 @@
   margin-top: 2rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-
 }
 
-.output-container {
-
+.outputContainer {
   border-top: 1px solid #D0D0D0;
   justify-content: center;
   display: flex;

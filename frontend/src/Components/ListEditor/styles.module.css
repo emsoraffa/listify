@@ -1,31 +1,31 @@
-.checklist-item {
+.checklistItem {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.checklist-item+.checklist-item {
+.checklistItem+.checklistItem {
   margin-top: 0;
 }
 
-.checkbox-container {
+.checkboxContainer {
   margin-right: 0.75em;
 }
 
-.checkbox-content {
+.checkboxContent {
   flex: 1;
 }
 
-.checkbox-content-checked {
+.checkboxContentChecked {
   opacity: 0.666;
   text-decoration: line-through;
 }
 
-.checkbox-content-unchecked {
+.checkboxContentUnchecked {
   opacity: 1;
   text-decoration: none;
 }
 
-.checkbox-content:focus {
+.checkboxContent:focus {
   outline: none;
 }

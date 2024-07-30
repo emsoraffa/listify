@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import './styles.css';
+import styles from './styles.module.css';
 import { useMediaQuery } from 'react-responsive';
 import { DashboardListDto } from '../../dto';
 import { fetchUserLists } from '../../api';
@@ -35,7 +35,7 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="content-container">
+    <div className={styles.contentContainer}>
       <h2>My lists</h2>
       {lists.length > 0 ? (
         lists.map((list) => (
@@ -47,9 +47,9 @@ export function DashboardPage() {
           />
         ))
       ) : (
-        <div className="empty-dashboard-text">So empty...</div>
+        <div className={styles.emptyDashboardText}>So empty...</div>
       )}
-      <Button variant="contained" color="primary" onClick={handleNewListClick}>
+      <Button variant="contained" color="secondary" onClick={handleNewListClick}>
         Create New List
       </Button>
     </div>

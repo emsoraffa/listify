@@ -1,4 +1,4 @@
-import "./styles.css";
+import styles from "./styles.module.css";
 
 interface ListCardProps {
   list_name: string;
@@ -8,9 +8,9 @@ interface ListCardProps {
 
 export function ListCard({ list_name, author, onClick }: ListCardProps) {
   return (
-    <div className="listcard-container" onClick={onClick}>
-      <h3 className="list-name">{list_name}</h3>
-      <p className="author">Author: {author}</p>
+    <div className={styles.listCardContainer} onClick={onClick}>
+      <h3 className={styles.listName}>{list_name}</h3>
+      <p className={styles.listAuthor}>Author: {author}</p>
     </div>
   );
 }

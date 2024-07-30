@@ -1,3 +1,4 @@
+
 import { Button, CircularProgress } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchListById, postList } from "../../api";
@@ -6,7 +7,7 @@ import { TitleEditor } from "../../Components/TitleEditor";
 import { isCheckListItemElement, isElement } from "../../types/TypeGuards";
 import { Descendant, Element as SlateElement } from "slate";
 import { debounce } from 'lodash';
-import "./styles.css";
+import styles from "./styles.module.css";
 import { CheckListItemDto } from "../../dto";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext/UserContext";
@@ -49,6 +50,7 @@ export function ListPage() {
       return 'There was an error estimating your costs. TIP: try being as specific as possible';
     }
   };
+
   const handleEstimate = async () => {
     setLoading(true);
     const itemNames = listItems
@@ -60,24 +62,25 @@ export function ListPage() {
     try {
       const estimatedCost = await estimateCosts(itemNames);
       console.log('Estimated cost:', estimatedCost);
-      const formattedEstimatedCost = parseCost(estimatedCost)
+      const formattedEstimatedCost = parseCost(estimatedCost);
       setLoading(false);
-
       setCosts(formattedEstimatedCost);
     } catch (error) {
       console.error('Error estimating costs:', error);
       setLoading(false);
     }
-  }; const handleSave = useCallback(() => {
-    const titleElement = title.find(isElement);
-    const list_name = titleElement ? titleElement.children[0].text.trim() : "";
+  };
 
-    if (!list_name) {
+  const handleSave = useCallback(() => {
+    const titleElement = title.find(isElement);
+    const listName = titleElement ? titleElement.children[0].text.trim() : "";
+
+    if (!listName) {
       console.error('The title is mandatory');
       return;
     }
 
-    const list_items = listItems
+    const listItemsToSave = listItems
       .filter(isElement)
       .filter(isCheckListItemElement)
       .map(item => ({
@@ -88,7 +91,7 @@ export function ListPage() {
 
     if (token) {
       const listId: number | null = id && id !== 'new' ? parseInt(id) : null;
-      postList({ id: listId, list_name, list_items }, token)
+      postList({ id: listId, list_name: listName, list_items: listItemsToSave }, token)
         .then(response => {
           console.log('Data posted successfully:', response);
           if (id === 'new' && response.id) {
@@ -137,15 +140,15 @@ export function ListPage() {
   }, [id, token]);
 
   return (
-    <div className={isMobile ? "container" : "large-container"}>
-      <div className="title-container">
+    <div className={isMobile ? styles.container : styles.largeContainer}>
+      <div className={styles.titleContainer}>
         <TitleEditor title={title}
           ref={titleEditorRef}
           onFocusNext={() => listEditorRef.current?.focus()}
           setTitle={setTitle}
           key={titleEditorKey} />
       </div>
-      <div className="editor-container">
+      <div className={styles.editorContainer}>
         <ListEditor listItems={listItems}
           ref={listEditorRef}
           setListItems={setListItems}
@@ -153,16 +156,12 @@ export function ListPage() {
           key={listEditorKey} />
       </div>
       <Button onClick={handleSave}>Save</Button>
-
       <Button onClick={handleEstimate}>Estimate costs</Button>
-      <div className="output-container">
-        {!isLoading && costs &&
-          <div>{costs}</div>}
-        {isLoading &&
-          <CircularProgress />}
-
+      <div className={styles.outputContainer}>
+        {!isLoading && costs && <div>{costs}</div>}
+        {isLoading && <CircularProgress />}
       </div>
-    </div >
+    </div>
   );
 }
 

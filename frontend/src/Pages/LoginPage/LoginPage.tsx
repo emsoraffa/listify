@@ -1,4 +1,4 @@
-import "./styles.css";
+import styles from "./styles.module.css";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -32,7 +32,7 @@ export function LoginPage({ isMobileTest }: LoginPageProps) {
   };
   return (
     <>
-      <div className="login-container">
+      <div className={styles.loginContainer}>
         <Button onClick={googleLogin} variant="contained" color="primary">
           Login with Google
         </Button>
