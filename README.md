@@ -19,14 +19,14 @@ This web application is designed to help users create shopping lists and estimat
 
 ## Screenshots
 
-### Main Interface
-
-![Main Interface](./docs/screenshot1.png)
-
-### Shopping List Feature
+### Landing page
 
 ![Shopping List Feature](./docs/screenshot2.png)
 
-### Budget Estimation
+### List Page
 
 ![Budget Estimation](./docs/screenshot3.png)
+
+### Mobile friendly
+
+![Main Interface](./docs/screenshot1.png)
