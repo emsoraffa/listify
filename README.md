@@ -27,6 +27,3 @@ This web application is designed to help users create shopping lists and estimat
 
 ![Budget Estimation](./docs/screenshot3.png)
 
-### Mobile friendly
-
-![Main Interface](./docs/screenshot1.png)
