@@ -4,7 +4,8 @@ This web application is designed to help users create shopping lists and estimat
 
 ## Features
 
-- **Create and Manage Shopping Lists**: Users can create multiple shopping lists and add items as needed.
+- **Create and Manage Shopping Lists**: Users can create multiple shopping lists and add items as needed. Seamlessly edit your lists in the
+  editor, powered by Slate!
 - **Budget Estimation**: Utilizes the OpenAI API to estimate costs and suggest budget-friendly options.
 - **User Authentication**: Secure login with OAuth2 and Spring security allowing you to login with your Google account.
 - **Responsive Design**: Ensures a seamless experience across all devices.
@@ -26,4 +27,3 @@ This web application is designed to help users create shopping lists and estimat
 ### List Page
 
 ![Budget Estimation](./docs/screenshot3.png)
-
